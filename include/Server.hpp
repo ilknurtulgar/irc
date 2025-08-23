@@ -1,27 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/23 18:21:12 by itulgar          ###   ########.fr       */
+/*   Created: 2025/08/23 18:18:31 by itulgar           #+#    #+#             */
+/*   Updated: 2025/08/23 18:21:35 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "Client.hpp"
+#ifndef SERVER_HPP
+#define SERVER_HPP
+
+#include <cstring>
+#include <iostream>
 
 
-int main(int argc, char** arv){
-	
-	(void)arv;
-	if(argc != 3){
-	 	std::cout << "invalid argument honey" << std::endl;
-		return 0;
-	}else {
-		std::cout << "ak git kanka" << std::endl;
-	}
 
-}
+#endif
