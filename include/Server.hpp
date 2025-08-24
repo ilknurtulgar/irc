@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:31 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/24 17:51:04 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/08/24 19:09:57 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ class Server
 		void acceptNewClient();
 		void recvClientData(int clientSocketFd);
 		void setPoll();
-		
 	public:
 		Server(int port, std::string &password);
 		~Server();

@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/24 17:55:44 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/08/24 19:23:34 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void Server::setPoll()
 			if(fds[i].fd== serverSocketFd)
 				acceptNewClient();
 			else
-				//recvClientData(fds[i].fd); 
+				recvClientData(fds[i].fd); 
 		}
 	}
 }
@@ -130,6 +130,7 @@ void Server::acceptNewClient()
 	if(flag < 0)
 	{
 		perror("fcntl F_getfl");
+		
 		exit(EXIT_FAILURE);
 	}
 	flag |= O_NONBLOCK;
@@ -155,7 +156,7 @@ void Server::recvClientData(int clientSocketFd)
 		perror("recv failed");
 		return;
 	}
-	else if (byteRead = 0)
+	else if (byteRead == 0)
 	{
 		std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
 		return;

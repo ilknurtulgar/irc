@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/24 17:02:47 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/08/24 19:13:03 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,11 @@ class Client
 	private:
 		int clientSocketFd;
 		struct sockaddr_in clientAddr;
+
 	public:
 		Client(int clientSocketFd, sockaddr_in clientAddr);
 		~Client();
+		void handleCommand(std::string &receiveData);
 };
 
 
