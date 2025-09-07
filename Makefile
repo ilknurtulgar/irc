@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 RM = rm -rf
 
-SRCS = main.cpp
+SRCS = main.cpp ./src/Client.cpp ./src/Server.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
