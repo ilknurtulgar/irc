@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:31 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/24 19:09:57 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/07 14:26:39 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <map>
 #include "Client.hpp"
+#include <cstdlib>
+#include <cstdio>
 
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE 1024
@@ -34,7 +36,7 @@ class Server
 {
 	private:
 		int port;
-		std::string &password;
+		std::string password;
 		int serverSocketFd;
 		std::map<int, Client*> clients;
 		void setupServer();
@@ -42,7 +44,7 @@ class Server
 		void recvClientData(int clientSocketFd);
 		void setPoll();
 	public:
-		Server(int port, std::string &password);
+		Server(int port, std::string password);
 		~Server();
 		void run();
 		

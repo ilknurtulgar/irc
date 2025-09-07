@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/24 19:23:34 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/07 15:42:26 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "./include/Server.hpp"
-#include "./include/Client.hpp"
+#include "../include/Server.hpp"
+#include "../include/Client.hpp"
 
-Server::Server(int port, std::string &password) : port(port), password(password)
+Server::Server(int port, std::string password) : port(port), password(password)
 {
 	std::cout << "olustum askim" << std::endl;
 	

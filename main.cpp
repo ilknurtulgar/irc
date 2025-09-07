@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/24 19:23:40 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/07 13:18:38 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int main(int argc, char** argv){
 			return 0;
 		}
 		int port = atoi(argv[1]);
-		if(port < 0 && port > 65535)
+		if(port < 0 || port > 65535)
 		{
 			std::cout << "hatalı port" << std::endl;
 			return 0;
