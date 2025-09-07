@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/07 15:42:26 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/07 19:08:41 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ void Server::run()
 {
 	setupServer();
 	//bind, socket,listen,fcntl ile non-blocking 
-	while(1)
-	{
+	 while(1)
+	 {
 		setPoll();
 		//veri gönder clienta
 	}
@@ -158,6 +158,7 @@ void Server::recvClientData(int clientSocketFd)
 	}
 	else if (byteRead == 0)
 	{
+		std::cout << "yedim" << std::endl;
 		std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
 		return;
 	}

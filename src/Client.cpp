@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/07 16:46:19 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/07 19:09:54 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 Client::Client(int clientSocketFd, sockaddr_in clientAddr)
   : clientSocketFd(clientSocketFd), clientAddr(clientAddr)
 {
+
     // Parametreyi değil, class üyesini kullanalım
     std::cout << "client const: " << this->clientAddr.sin_addr.s_addr << std::endl;
 }
@@ -26,39 +27,59 @@ Client::~Client()
 }
 
 void Client::handleCommand(std::string &receiveData){
+	
 	std::stringstream ss(receiveData);
 	std::string newCommand;
-	std::getline(ss,newCommand,' ');
-	ss >> newNick;
-	if(newCommand == "NICK")
-		handleNick(receiveData);
-	// else if(newCommand == "USER")
-	// 	handleUser(receiveData);
-	// else if(newCommand == "JOIN")
-	// 	handleJoin(receiveData);
-    // else if(newCommand == "PRIVMSG")
-    //     handlePrivMsg(receiveData);
-	// else if(newCommand == "KICK")
-	// 	handleKick(receiveData);
-	// else if(newCommand == "INVITE")
-	// 	handleInvite(receiveData);
-	// else if(newCommand == "TOPIC -")
-	// 	handleTopic(receiveData);
-	// else if(newCommand == "MODE")
-	// 	handleMode(receiveData);
+	std::vector<std::string> data;
 	
-	printf("command: %s\n", newCommand.c_str());
+	while(ss >> newCommand){
+		data.push_back(newCommand);
+		//std::cout << "nrCommand vector: " << newCommand << std::endl;
+	}
+
+	if(data.empty())
+		return;
 	
-	
-	std::cout <<"burasıyom : " << receiveData << std::endl;
+	if(data[0] == "NICK")
+		handleNick(data);
+	// else if(data[0] == "USER")
+	//  	handleUser(data);
+	// else if(data[0] == "JOIN")
+	// 	handleJoin(data);
+    // else if(data[0] == "PRIVMSG")
+    //     handlePrivMsg(data);
+	// else if(data[0] == "KICK")
+	// 	handleKick(data);
+	// else if(data[0] == "INVITE")
+	// 	handleInvite(data);
+	// else if(data[0] == "TOPIC -")
+	// 	handleTopic(data);
+	// else if(data[0] == "MODE")
+	// 	handleMode(data);
 }
 
-void Client::handleNick(std::string &receiveData)
+
+
+void Client::handleNick(std::vector<std::string> data)
 {
-	std::stringstream ss(receiveData);
-	std::getline(ss,newCommand,' ');
-	std::string newNick;
-	ss >> newNick;
-	std::cout << "new: " << newNick << std::endl;
-	//std::getline(ss, newNick,);
+	//""
+	if(data.size() != 2 || data[1].empty()){
+		perror("hata salak");
+		exit(EXIT_FAILURE);
+	}
+	
+	//nickName = data[1];
+	//std::cout << "nickteyim: " << nickName << std::endl;
 }
+
+// void Client::handleUser(std::vector<std::string> data)
+// {
+// 	//""
+// 	if(data[1].empty()){
+// 		perror("hata salak");
+// 		exit(EXIT_FAILURE);
+// 	}
+	
+// 	user = data[1];
+// 	std::cout << "nickteyim: " << nickName << std::endl;
+// }
