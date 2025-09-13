@@ -3,21 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/07 19:09:54 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 13:49:44 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
 
-Client::Client(int clientSocketFd, sockaddr_in clientAddr)
-  : clientSocketFd(clientSocketFd), clientAddr(clientAddr)
+Client::Client(int clientSocketFd, sockaddr_in clientAddr,std::string serverPass)
+  : clientSocketFd(clientSocketFd), clientAddr(clientAddr), serverPass(serverPass)
 {
-
-    // Parametreyi değil, class üyesini kullanalım
+    nickName = "";
+	userName = "";
+	realName = "";
+	signPass = false;
     std::cout << "client const: " << this->clientAddr.sin_addr.s_addr << std::endl;
 }
 
@@ -25,6 +27,8 @@ Client::~Client()
 {
 	close(clientSocketFd);
 }
+
+
 
 void Client::handleCommand(std::string &receiveData){
 	
@@ -40,8 +44,21 @@ void Client::handleCommand(std::string &receiveData){
 	if(data.empty())
 		return;
 	
-	if(data[0] == "NICK")
-		handleNick(data);
+	if(!invalidCommand(data[0])){
+		std::cout << "Unknown command: " << data[0] << std::endl;
+		std::string errorMsg = ":irc.server.com 421 * INVALID :Unknown command\r\n";
+		send(clientSocketFd, errorMsg.c_str(),errorMsg.length(), 0);	
+		return;
+	}
+
+	if(!isSignedPassword() && data[0] != "PASS"){
+    	std::string errorMsg = ":irc.server.com 464 * :Password required\r\n";
+		send(clientSocketFd, errorMsg.c_str(),errorMsg.length(), 0);	
+		return;
+	}
+
+	std::cout << "receiveData: " << receiveData << std::endl;
+	// x
 	// else if(data[0] == "USER")
 	//  	handleUser(data);
 	// else if(data[0] == "JOIN")

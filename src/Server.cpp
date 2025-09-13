@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/07 19:08:41 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 13:50:39 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 
 Server::Server(int port, std::string password) : port(port), password(password)
 {
-	std::cout << "olustum askim" << std::endl;
-	
 }
 
 Server::~Server()
@@ -28,7 +26,6 @@ Server::~Server()
 	clients.clear();
 	if (serverSocketFd >= 0)
 		close(serverSocketFd);
-	std::cout << "gittim askim" << std::endl;
 }
 
 
@@ -140,7 +137,7 @@ void Server::acceptNewClient()
 		exit(EXIT_FAILURE);
 	}
 	
-	Client* newClient= new Client(newClientSocketFd, clientAddrr);
+	Client* newClient= new Client(newClientSocketFd, clientAddrr,password);
 	clients[newClientSocketFd] = newClient;
 	
 	std::cout << "New client connected, socket fd: " << newClientSocketFd << std::endl;
@@ -158,10 +155,20 @@ void Server::recvClientData(int clientSocketFd)
 	}
 	else if (byteRead == 0)
 	{
-		std::cout << "yedim" << std::endl;
 		std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
 		return;
 	}
+
+	if(byteRead > 510){
+		std::string errorMsg = "ERROR :Line too long. Max 512 bytes allowed per message.\r\n";
+		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+		std::cout << "Client " << clientSocketFd << " sent oversized message (" << byteRead << " bytes). Disconnecting." << std::endl;
+		close(clientSocketFd);
+        delete clients[clientSocketFd];
+        clients.erase(clientSocketFd);
+		return;
+	}
+	
 	buffer[byteRead] = '\0';
 	std::string receiveData(buffer);
 	
