@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 13:43:55 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 14:52:39 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,12 @@ class Client
 		Client(int clientSocketFd, sockaddr_in clientAddr,std::string serverPass);
 		~Client();
 		
-		
 		void handleCommand(std::string &receiveData);
 		void handleNick(std::vector<std::string> data);
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
-		//void Client::handleUser(std::vector<std::string> data);
+		void handlePass(std::vector<std::string> data);
+		void handleUser(std::vector<std::string> data);
 
 		
 

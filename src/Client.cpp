@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 13:49:44 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 16:24:07 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,18 @@ void Client::handleCommand(std::string &receiveData){
 	
 	while(ss >> newCommand){
 		data.push_back(newCommand);
-		//std::cout << "nrCommand vector: " << newCommand << std::endl;
 	}
 
 	if(data.empty())
 		return;
+
+	std::cout << "Received from " << clientSocketFd << ": [";
+	for(size_t i = 0; i < data.size(); ++i){
+		std::cout << data[i];
+		if(i < data.size() - 1)
+			std::cout << " ";
+	}
+	std::cout << "]" << std::endl;
 	
 	if(!invalidCommand(data[0])){
 		std::cout << "Unknown command: " << data[0] << std::endl;
@@ -58,9 +65,12 @@ void Client::handleCommand(std::string &receiveData){
 	}
 
 	std::cout << "receiveData: " << receiveData << std::endl;
-	// x
-	// else if(data[0] == "USER")
-	//  	handleUser(data);
+	if(data[0] == "PASS")
+		handlePass(data);
+	else if(data[0] == "USER")
+	 	handleUser(data);
+	else if(data[0] == "NICK")
+		handleNick(data);
 	// else if(data[0] == "JOIN")
 	// 	handleJoin(data);
     // else if(data[0] == "PRIVMSG")
@@ -75,28 +85,3 @@ void Client::handleCommand(std::string &receiveData){
 	// 	handleMode(data);
 }
 
-
-
-void Client::handleNick(std::vector<std::string> data)
-{
-	//""
-	if(data.size() != 2 || data[1].empty()){
-		perror("hata salak");
-		exit(EXIT_FAILURE);
-	}
-	
-	//nickName = data[1];
-	//std::cout << "nickteyim: " << nickName << std::endl;
-}
-
-// void Client::handleUser(std::vector<std::string> data)
-// {
-// 	//""
-// 	if(data[1].empty()){
-// 		perror("hata salak");
-// 		exit(EXIT_FAILURE);
-// 	}
-	
-// 	user = data[1];
-// 	std::cout << "nickteyim: " << nickName << std::endl;
-// }

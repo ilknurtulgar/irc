@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 13:50:39 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 15:11:31 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,9 @@ Server::~Server()
 void Server::run()
 {
 	setupServer();
-	//bind, socket,listen,fcntl ile non-blocking 
 	 while(1)
 	 {
 		setPoll();
-		//veri gönder clienta
 	}
 
 }
