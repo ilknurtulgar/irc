@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 13:49:44 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 14:42:42 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,14 @@ void Client::handleCommand(std::string &receiveData){
 
 	if(data.empty())
 		return;
+
+	std::cout << "Received from " << clientSocketFd << ": [";
+	for(size_t i = 0; i < data.size(); ++i){
+		std::cout << data[i];
+		if(i < data.size() - 1)
+			std::cout << " ";
+	}
+	std::cout << "]" << std::endl;
 	
 	if(!invalidCommand(data[0])){
 		std::cout << "Unknown command: " << data[0] << std::endl;
@@ -58,7 +66,8 @@ void Client::handleCommand(std::string &receiveData){
 	}
 
 	std::cout << "receiveData: " << receiveData << std::endl;
-	// x
+	if(data[0] == "PASS")
+		handlePass(data);
 	// else if(data[0] == "USER")
 	//  	handleUser(data);
 	// else if(data[0] == "JOIN")
