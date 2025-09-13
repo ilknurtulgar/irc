@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 14:52:39 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 16:58:32 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ class Client
 		struct sockaddr_in clientAddr;
 		std::string nickName;
 		std::string userName;
+		std::string hostName;
+		std::string serverName;
 		std::string realName;
 		std::string serverPass;
 		bool signPass;
