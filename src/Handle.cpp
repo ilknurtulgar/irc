@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:37:23 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 15:51:55 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,5 @@ void Client::handlePass(std::vector<std::string> data){
 
 void Client::handleUser(std::vector<std::string> data){
 	
-
+(void)data;
 }
