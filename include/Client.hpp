@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 14:42:30 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 14:52:39 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Client
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
 		void handlePass(std::vector<std::string> data);
-	//	void handleUser(std::vector<std::string> data);
+		void handleUser(std::vector<std::string> data);
 
 		
 
