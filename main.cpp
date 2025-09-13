@@ -3,24 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/08/23 18:05:04 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/07 13:18:38 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <cstring>
-#include <iostream>
+#include "./include/Server.hpp"
+#include "./include/Client.hpp"
 
-int main(int argc, char** arv){
+
+int main(int argc, char** argv){
 	
-	(void)arv;
 	if(argc != 3){
 	 	std::cout << "invalid argument honey" << std::endl;
 		return 0;
 	}else {
-		std::cout << "ak git kanka" << std::endl;
+		std::string password= argv[2];
+		if(password.empty())
+		{
+			std::cout << "hatalı password" << std::endl;
+			return 0;
+		}
+		int port = atoi(argv[1]);
+		if(port < 0 || port > 65535)
+		{
+			std::cout << "hatalı port" << std::endl;
+			return 0;
+		}
+		Server server(port,password);
+
+		server.run();
+		
 	}
 
 }
+
