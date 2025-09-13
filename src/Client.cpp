@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:03:49 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 16:24:07 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,18 @@ void Client::handleCommand(std::string &receiveData){
 	
 	while(ss >> newCommand){
 		data.push_back(newCommand);
-		//std::cout << "nrCommand vector: " << newCommand << std::endl;
 	}
 
 	if(data.empty())
 		return;
+
+	std::cout << "Received from " << clientSocketFd << ": [";
+	for(size_t i = 0; i < data.size(); ++i){
+		std::cout << data[i];
+		if(i < data.size() - 1)
+			std::cout << " ";
+	}
+	std::cout << "]" << std::endl;
 	
 	if(!invalidCommand(data[0])){
 		std::cout << "Unknown command: " << data[0] << std::endl;
@@ -58,10 +65,12 @@ void Client::handleCommand(std::string &receiveData){
 	}
 
 	std::cout << "receiveData: " << receiveData << std::endl;
-	if(data[0] == "NICK")
+	if(data[0] == "PASS")
+		handlePass(data);
+	else if(data[0] == "USER")
+	 	handleUser(data);
+	else if(data[0] == "NICK")
 		handleNick(data);
-	// else if(data[0] == "USER")
-	//  	handleUser(data);
 	// else if(data[0] == "JOIN")
 	// 	handleJoin(data);
     // else if(data[0] == "PRIVMSG")
@@ -76,6 +85,3 @@ void Client::handleCommand(std::string &receiveData){
 	// 	handleMode(data);
 }
 
-std::string Client::getNickName() const {
-    return nickName;
-}
