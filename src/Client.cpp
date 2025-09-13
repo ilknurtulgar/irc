@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:37:30 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 16:24:07 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ void Client::handleCommand(std::string &receiveData){
 		handlePass(data);
 	else if(data[0] == "USER")
 	 	handleUser(data);
+	else if(data[0] == "NICK")
+		handleNick(data);
 	// else if(data[0] == "JOIN")
 	// 	handleJoin(data);
     // else if(data[0] == "PRIVMSG")
