@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 13:43:55 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/09/13 15:04:42 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ class Client
 		void handleNick(std::vector<std::string> data);
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
+		bool isValidNickname(const std::string& nickName);
+		std::string getNickName() const;
 		//void Client::handleUser(std::vector<std::string> data);
 
 		
