@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 16:24:07 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 20:43:13 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,11 @@ Client::Client(int clientSocketFd, sockaddr_in clientAddr,std::string serverPass
 {
     nickName = "";
 	userName = "";
+	hostName = "";
+	serverName = "";
 	realName = "";
 	signPass = false;
+	isRegistered = false;
     std::cout << "client const: " << this->clientAddr.sin_addr.s_addr << std::endl;
 }
 
@@ -63,25 +66,45 @@ void Client::handleCommand(std::string &receiveData){
 		send(clientSocketFd, errorMsg.c_str(),errorMsg.length(), 0);	
 		return;
 	}
-
+	
 	std::cout << "receiveData: " << receiveData << std::endl;
-	if(data[0] == "PASS")
-		handlePass(data);
-	else if(data[0] == "USER")
-	 	handleUser(data);
-	else if(data[0] == "NICK")
-		handleNick(data);
-	// else if(data[0] == "JOIN")
-	// 	handleJoin(data);
-    // else if(data[0] == "PRIVMSG")
-    //     handlePrivMsg(data);
-	// else if(data[0] == "KICK")
-	// 	handleKick(data);
-	// else if(data[0] == "INVITE")
-	// 	handleInvite(data);
-	// else if(data[0] == "TOPIC -")
-	// 	handleTopic(data);
-	// else if(data[0] == "MODE")
-	// 	handleMode(data);
+
+	 if (data[0] == "PASS")
+        handlePass(data);
+    else if (data[0] == "USER")
+        handleUser(data);
+    else if (data[0] == "NICK")
+        handleNick(data);
+
+    // Kayıt durumu kontrol et ve güncelle
+    if (isSignedPassword() && isRegister()) {
+        isRegistered = true;
+		if(data[0] == "USER" || data[0] == "NICK"){
+			std::string welcomeMsg = ":irc.server.com 001 " + nickName + " :Welcome to the IRC server\r\n";
+    		send(clientSocketFd, welcomeMsg.c_str(), welcomeMsg.length(), 0);	
+    }
+
+    // Kullanıcı henüz kayıtlı değilse ve komut PASS/USER/NICK değilse, izin verme
+    if (!isRegistered && data[0] != "PASS" && data[0] != "USER" && data[0] != "NICK") {
+        std::string errorMsg = ":irc.server.com 451 * :You have not registered\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+
+
+    // Kayıtlı kullanıcıysa, diğer komutları işleyebilirsin
+    if (isRegistered) {
+        if (data[0] == "JOIN") {
+            std::cout << "JOIN command received" << std::endl;
+            // handleJoin(data);
+        }
+
+        // Diğer komutlar:
+        // else if (data[0] == "PRIVMSG") handlePrivMsg(data);
+        // ...
+    }
+
+	
 }
 
+}

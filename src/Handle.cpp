@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 17:43:05 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 20:36:31 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void Client::handleNick(std::vector<std::string> data){
     std::cout << "Nickname set to: " << nickName << std::endl;
 }
 
-// USER <username> <unused> <unused> :zerrin ayaz //burada real nama arasında boslık olbialir
+
 
 void Client::handleUser(std::vector<std::string> data){
 	
@@ -82,9 +82,24 @@ void Client::handleUser(std::vector<std::string> data){
 		}
 	} else
 		realName = data[4].substr(1);
-	
-	std::cout << "User info set - username: " << userName << ", realname: " << realName << std::endl;
-	std::string welcomeMsg = ":irc.server.com 001 " + nickName + " :Welcome to the IRC server\r\n";
-    send(clientSocketFd, welcomeMsg.c_str(), welcomeMsg.length(), 0);
+
 }
 
+// bool Client::isRegister(){
+// 	if(nickName.empty() ||userName.empty() || realName.empty() ||hostName.empty() || serverName.empty()){
+// 		return false;
+// 	}
+// 	std::cout << "User info set - username: " << userName << ", realname: " << realName << std::endl;
+// 	std::string welcomeMsg = ":irc.server.com 001 " + nickName + " :Welcome to the IRC server\r\n";
+// 	send(clientSocketFd, welcomeMsg.c_str(), welcomeMsg.length(), 0);
+// 	isRegistered = true;
+// 	return true;
+// }
+
+// void Client::handleJoin(std::vector<std::string> data){
+// }
+
+bool Client::isRegister() {
+    return !nickName.empty() && !userName.empty() && !realName.empty()
+           && !hostName.empty() && !serverName.empty();
+}
