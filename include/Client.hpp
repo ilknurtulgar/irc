@@ -41,12 +41,15 @@ class Client
 		
 		void handleCommand(std::string &receiveData);
 		void handleNick(std::vector<std::string> data);
+		void handlePing(std::vector<std::string> data);
+		//void handleJoin(std::vector<std::string> data);
+		
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
 		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
 		bool isRegister();
-		void handleJoin(std::vector<std::string> data);
+
 };
 
 

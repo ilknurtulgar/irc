@@ -87,15 +87,26 @@ void Client::handleUser(std::vector<std::string> data){
 
 }
 
-bool Client::isRegister() {
-    for(int i = 0; i < 3; i++)
-    {
-        if(isRegistered[i]!=true)
-            return false;
+void Client::handlePing(std::vector<std::string> data){
+    
+    std::string serverNames = "irc.localhost";
+    if(data.size() > 1){
+        serverNames = data[1];
     }
+     else {
+        std::cout << "PING: Missing parameter." << std::endl;
+        return;
+    }
+    std::string response = "PONG " + serverNames + " :" + serverNames + "\r\n";
+    send(clientSocketFd,response.c_str(),response.length(),0);
 
-    if(!userName.empty() && !realName.empty() && !hostName.empty() && !serverName.empty())
-        return true;
-    return false;
-
+    std::cout << "Sent PONG to " << nickName << ": " << response;
 }
+
+
+
+
+// void Client::handleJoin(std::vector<std::string> data){
+
+// }
+

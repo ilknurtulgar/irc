@@ -75,6 +75,7 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
+	
 	else
 	{
 		if(!isRegister())
@@ -83,12 +84,9 @@ void Client::handleCommand(std::string &receiveData)
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
 		}
-	
-	if (data[0] == "JOIN") 
-		std::cout << "join" << std::endl;	
-	//handleJoin(data);
-	
-    // else if (data[0] == "PART") handlePart(data);
+
+	// if (data[0] == "JOIN") 	
+	// 	handleJoin(data);
     // else if (data[0] == "PRIVMSG") handlePrivMsg(data);
     // else if (data[0] == "NOTICE") handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
@@ -98,7 +96,10 @@ void Client::handleCommand(std::string &receiveData)
     // else if (data[0] == "WHO") handleWho(data);
     // else if (data[0] == "NAMES") handleNames(data);
     // else if (data[0] == "LIST") handleList(data);
-    // else if (data[0] == "PING") handlePing(data);
+    // else if (data[0] == "PART") handlePart(data);
+	if (data[0] == "PING") 
+		handlePing(data);
+    // else if (data[0] == "QUIT") handleQuit(data);
 	}
 	
 	if (isRegister() && !hasWelcomed)
