@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 16:58:32 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 20:16:22 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Client
 		std::string realName;
 		std::string serverPass;
 		bool signPass;
-		//bool isRegistered;
+		bool isRegistered[3];
 
 
 	public:
@@ -44,9 +44,11 @@ class Client
 		bool invalidCommand(const std::string& command);
 		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
+		bool isRegister();
+		void handleJoin(std::vector<std::string> data);
+		void girdimaq();
 
 		
-
 		
 };
 
