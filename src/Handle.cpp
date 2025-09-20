@@ -27,6 +27,7 @@ void Client::handlePass(std::vector<std::string> data){
 		return;
 	}
 	signPass = true;
+    isRegistered[0] = true;
 	
 }	
 
@@ -57,6 +58,7 @@ void Client::handleNick(std::vector<std::string> data){
     }
     nickName = data[1];
     std::cout << "Nickname set to: " << nickName << std::endl;
+    isRegistered[1] = true;
 }
 
 
@@ -82,6 +84,7 @@ void Client::handleUser(std::vector<std::string> data){
 		}
 	} else
 		realName = data[4].substr(1);
+    isRegistered[2] = true;
 
 }
 
@@ -100,6 +103,11 @@ void Client::handleUser(std::vector<std::string> data){
 // }
 
 bool Client::isRegister() {
-    return !nickName.empty() && !userName.empty() && !realName.empty()
-           && !hostName.empty() && !serverName.empty();
+    for(int i = 0; i < 3; i++)
+    {
+        if(isRegistered[i]!=true)
+            return false;
+    }
+    return true;
+
 }

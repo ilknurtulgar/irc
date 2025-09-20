@@ -31,7 +31,7 @@ class Client
 		std::string realName;
 		std::string serverPass;
 		bool signPass;
-		bool isRegistered;
+		bool isRegistered[3];
 
 
 	public:
