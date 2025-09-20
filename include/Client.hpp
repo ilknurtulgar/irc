@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:04:42 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/09/13 20:16:22 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,27 +26,29 @@ class Client
 		struct sockaddr_in clientAddr;
 		std::string nickName;
 		std::string userName;
+		std::string hostName;
+		std::string serverName;
 		std::string realName;
 		std::string serverPass;
 		bool signPass;
-		//bool isRegistered;
+		bool isRegistered[3];
 
 
 	public:
 		Client(int clientSocketFd, sockaddr_in clientAddr,std::string serverPass);
 		~Client();
 		
-		
 		void handleCommand(std::string &receiveData);
 		void handleNick(std::vector<std::string> data);
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
-		bool isValidNickname(const std::string& nickName);
-		std::string getNickName() const;
-		//void Client::handleUser(std::vector<std::string> data);
+		void handlePass(std::vector<std::string> data);
+		void handleUser(std::vector<std::string> data);
+		bool isRegister();
+		void handleJoin(std::vector<std::string> data);
+		void girdimaq();
 
 		
-
 		
 };
 
