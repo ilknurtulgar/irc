@@ -28,6 +28,7 @@ void Client::handlePass(std::vector<std::string> data){
 	}
 	signPass = true;
     isRegistered[0] = true;
+    std::cout << "PASS received: " << data[1] << std::endl;
 	
 }	
 
@@ -64,9 +65,6 @@ void Client::handleNick(std::vector<std::string> data){
 
 
 void Client::handleUser(std::vector<std::string> data){
-	
-	std::cout << "size: " << data.size() << std::endl;
-
 	if (data.size() < 5 || data[4].size() < 2 || data[4][0] != ':') {
 			std::string errorMsg = ":irc.server.com 461 * USER :Not enough parameters\r\n";
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
@@ -85,22 +83,9 @@ void Client::handleUser(std::vector<std::string> data){
 	} else
 		realName = data[4].substr(1);
     isRegistered[2] = true;
+    std::cout << "Username: " << data[1] << ", Realname: " << data[4] << std::endl;
 
 }
-
-// bool Client::isRegister(){
-// 	if(nickName.empty() ||userName.empty() || realName.empty() ||hostName.empty() || serverName.empty()){
-// 		return false;
-// 	}
-// 	std::cout << "User info set - username: " << userName << ", realname: " << realName << std::endl;
-// 	std::string welcomeMsg = ":irc.server.com 001 " + nickName + " :Welcome to the IRC server\r\n";
-// 	send(clientSocketFd, welcomeMsg.c_str(), welcomeMsg.length(), 0);
-// 	isRegistered = true;
-// 	return true;
-// }
-
-// void Client::handleJoin(std::vector<std::string> data){
-// }
 
 bool Client::isRegister() {
     for(int i = 0; i < 3; i++)
@@ -108,6 +93,9 @@ bool Client::isRegister() {
         if(isRegistered[i]!=true)
             return false;
     }
-    return true;
+
+    if(!userName.empty() && !realName.empty() && !hostName.empty() && !serverName.empty())
+        return true;
+    return false;
 
 }

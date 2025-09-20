@@ -22,7 +22,7 @@ Client::Client(int clientSocketFd, sockaddr_in clientAddr, std::string serverPas
 	serverName = "";
 	realName = "";
 	signPass = false;
-	std::cout << "client const: " << this->clientAddr.sin_addr.s_addr << std::endl;
+	hasWelcomed = false;
 }
 
 Client::~Client()
@@ -69,33 +69,50 @@ void Client::handleCommand(std::string &receiveData)
 		return;
 	}
 
-	std::cout << "receiveData: " << receiveData << std::endl;
-
 	if (data[0] == "PASS")
 		handlePass(data);
 	else if (data[0] == "USER")
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
-
-	// Kayıt durumu kontrol et ve güncelle
-	else if (data[0] == "JOIN")
+	else
 	{
-		if (isRegister())
-		{
-			if (!userName.empty() && !realName.empty() && !hostName.empty() && !serverName.empty())
-			{
-				std::string welcomeMsg = ":irc.server.com 001 " + nickName + " :Welcome to the IRC server\r\n";
-				send(clientSocketFd, welcomeMsg.c_str(), welcomeMsg.length(), 0);
-			}
-
-			// Kullanıcı henüz kayıtlı değilse ve komut PASS/USER/NICK değilse, izin verme
-		}
-		else
+		if(!isRegister())
 		{
 			std::string errorMsg = ":irc.server.com 451 * :You have not registered\r\n";
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
 		}
+	
+	if (data[0] == "JOIN") 
+		std::cout << "join" << std::endl;	
+	//handleJoin(data);
+	
+    // else if (data[0] == "PART") handlePart(data);
+    // else if (data[0] == "PRIVMSG") handlePrivMsg(data);
+    // else if (data[0] == "NOTICE") handleNotice(data);
+    // else if (data[0] == "TOPIC") handleTopic(data);
+    // else if (data[0] == "KICK") handleKick(data);
+    // else if (data[0] == "MODE") handleMode(data);
+    // else if (data[0] == "INVITE") handleInvite(data);
+    // else if (data[0] == "WHO") handleWho(data);
+    // else if (data[0] == "NAMES") handleNames(data);
+    // else if (data[0] == "LIST") handleList(data);
+    // else if (data[0] == "PING") handlePing(data);
+	}
+	
+	if (isRegister() && !hasWelcomed)
+	{
+		std::string msg001 = ":irc.localhost 001 " + nickName + " :Welcome to the IRC server, " + nickName + "!\r\n";
+		std::string msg002 = ":irc.localhost 002 " + nickName + " :Your host is irc.localhost, running version 0.1\r\n";
+		std::string msg003 = ":irc.localhost 003 " + nickName + " :This server was created just now\r\n";
+		std::string msg004 = ":irc.localhost 004 " + nickName + " irc.localhost 0.1 iowghraAsORTVSxNCWqBzvdHtGp\r\n";
+
+		send(clientSocketFd, msg001.c_str(), msg001.length(), 0);
+		send(clientSocketFd, msg002.c_str(), msg002.length(), 0);
+		send(clientSocketFd, msg003.c_str(), msg003.length(), 0);
+		send(clientSocketFd, msg004.c_str(), msg004.length(), 0);
+
+		hasWelcomed = true;
 	}
 }

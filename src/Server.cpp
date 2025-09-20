@@ -14,9 +14,7 @@
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
 
-Server::Server(int port, std::string password) : port(port), password(password)
-{
-}
+Server::Server(int port, std::string password) : port(port), password(password){}
 
 Server::~Server()
 {
@@ -138,7 +136,8 @@ void Server::acceptNewClient()
 	Client* newClient= new Client(newClientSocketFd, clientAddrr,password);
 	clients[newClientSocketFd] = newClient;
 	
-	std::cout << "New client connected, socket fd: " << newClientSocketFd << std::endl;
+	std::cout << "IRC Server listening on port " << port << std::endl;
+	std::cout << "New client connected: " << newClientSocketFd << std::endl;
 	
 }
 

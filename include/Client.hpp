@@ -32,6 +32,7 @@ class Client
 		std::string serverPass;
 		bool signPass;
 		bool isRegistered[3];
+		bool hasWelcomed;
 
 
 	public:
@@ -46,10 +47,6 @@ class Client
 		void handleUser(std::vector<std::string> data);
 		bool isRegister();
 		void handleJoin(std::vector<std::string> data);
-		void girdimaq();
-
-		
-		
 };
 
 
