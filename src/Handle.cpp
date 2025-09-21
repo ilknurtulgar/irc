@@ -133,6 +133,7 @@ void Client::handleJoin(std::vector<std::string> data)
             std::string errorMsg = "403 ERR_NOSUCHCHANNEL <nick> <channel> :No such channel\r\n";
             return;
         }
-        
+
+       // if(isChannel(data[1]))
     }
 }

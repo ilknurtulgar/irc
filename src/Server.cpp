@@ -172,6 +172,6 @@ void Server::recvClientData(int clientSocketFd)
 	clients[clientSocketFd]-> handleCommand(receiveData);
 }
 
-bool isChannel(){
-	
-}
+// bool Server::isChannel(const std::string &name){
+// 	if(channels.find(name) == channels.end())
+// }

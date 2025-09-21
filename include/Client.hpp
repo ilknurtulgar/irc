@@ -19,6 +19,8 @@
 #include <sstream>
 #include <vector>
 
+class Server;
+
 class Client
 {
 	private:
