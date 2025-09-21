@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <map>
 #include "Client.hpp"
+#include "Channel.hpp"
 #include <cstdlib>
 #include <cstdio>
 
@@ -51,6 +52,7 @@ class Server
 		~Server();
 		void run();
 		bool isChannel(const std::string& name);
+		void checkChannel(Client* client, const std::string& channelName);
 		
 };
 

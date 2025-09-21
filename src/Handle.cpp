@@ -115,8 +115,6 @@ void Client::handlePing(std::vector<std::string> data)
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
 
-// JOIN #a
-
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -126,16 +124,12 @@ void Client::handleJoin(std::vector<std::string> data)
         return;
     }
 
-    else if (data.size() == 2)
-    {
         if (data[1][0] != '#')
         {
-            std::string errorMsg = "403 ERR_NOSUCHCHANNEL <nick> <channel> :No such channel\r\n";
+            std::string errorMsg = "403 ERR_NOSUCHCHANNEL" + nickName + " " + data[1] + " :No such channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
 
-      // if (!server->isChannel(data[1])) {
-      
+        server->checkChannel(this,data[1]);
 }
-
-    }

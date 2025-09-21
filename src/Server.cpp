@@ -133,7 +133,7 @@ void Server::acceptNewClient()
 		exit(EXIT_FAILURE);
 	}
 	
-	Client* newClient= new Client(newClientSocketFd, clientAddrr,password,this);
+	Client* newClient= new Client(newClientSocketFd, password,this);
 	clients[newClientSocketFd] = newClient;
 	
 	std::cout << "IRC Server listening on port " << port << std::endl;
@@ -178,5 +178,19 @@ bool Server::isChannel(const std::string &name){
 	return true;
 }
 
-//addChannel
-//createChannel
+void Server::checkChannel(Client *client,const std::string& channelName){
+	Channel *channel = nullptr;
+
+	if(isChannel(channelName))
+		channel = channels[channelName];
+	else{
+		channel = new Channel(channelName);
+		channels[channelName] = channel;
+	}
+
+	channel->addUser(client);
+	
+	std::string joinMsg = ":" + client->getNick() + " JOIN " + channelName + "\r\n";
+	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
+	channel->broadcast(joinMsg, client);
+}

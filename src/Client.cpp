@@ -13,8 +13,8 @@
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
 
-Client::Client(int clientSocketFd, sockaddr_in clientAddr, std::string serverPass, Server* srv)
-	: clientSocketFd(clientSocketFd), clientAddr(clientAddr), serverPass(serverPass), server(srv)
+Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
+	: clientSocketFd(clientSocketFd), serverPass(serverPass), server(srv)
 {
 	nickName = "";
 	userName = "";
@@ -121,4 +121,12 @@ void Client::handleCommand(std::string &receiveData)
 
 		hasWelcomed = true;
 	}
+}
+
+int Client::getFd()const{
+	return clientSocketFd;
+}
+
+std::string Client::getNick()const{
+	return nickName;
 }

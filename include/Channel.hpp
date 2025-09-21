@@ -6,10 +6,14 @@
 #include <unistd.h>
 #include <sstream>
 #include <vector>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <map> 
 #include <string> 
 #include<set>
 #include "Client.hpp"
+
+class Client;
 
 class Channel
 {
@@ -21,6 +25,9 @@ private:
 public:
     Channel(const std::string &channelName);
     ~Channel();
+
+    void addUser(Client* client);
+    void broadcast(const std::string& msg, Client* client);
 
 
 };

@@ -26,7 +26,6 @@ class Client
 {
 	private:
 	int clientSocketFd;
-	struct sockaddr_in clientAddr;
 	std::string nickName;
 	std::string userName;
 	std::string hostName;
@@ -40,7 +39,7 @@ class Client
 
 
 	public:
-		Client(int clientSocketFd, sockaddr_in clientAddr,std::string serverPass, Server* srv);
+		Client(int clientSocketFd,std::string serverPass, Server* srv);
 		~Client();
 
 		Server* getServer() const;
@@ -55,6 +54,9 @@ class Client
 		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
 		bool isRegister();
+
+		int getFd()const;
+		std::string getNick()const;
 
 };
 
