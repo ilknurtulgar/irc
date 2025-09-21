@@ -134,6 +134,8 @@ void Client::handleJoin(std::vector<std::string> data)
             return;
         }
 
-       // if(isChannel(data[1]))
-    }
+      // if (!server->isChannel(data[1])) {
+      
 }
+
+    }
