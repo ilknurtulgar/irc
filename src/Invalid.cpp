@@ -20,9 +20,22 @@ bool Client::isSignedPassword()
 
 bool Client::invalidCommand(const std::string& command){
 	return (command == "PASS" || command == "NICK" || 
-            command == "USER" || command == "JOIN" ||
+            command == "USER" || command == "JOIN" || command == "PING" ||
             command == "PRIVMSG" || command == "KICK" ||
             command == "INVITE" || command == "TOPIC" ||
             command == "MODE" || command == "QUIT");
 	
+}
+
+bool Client::isRegister() {
+    for(int i = 0; i < 3; i++)
+    {
+        if(isRegistered[i]!=true)
+            return false;
+    }
+
+    if(!userName.empty() && !realName.empty() && !hostName.empty() && !serverName.empty())
+        return true;
+    return false;
+
 }
