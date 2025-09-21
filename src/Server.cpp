@@ -171,3 +171,7 @@ void Server::recvClientData(int clientSocketFd)
 	
 	clients[clientSocketFd]-> handleCommand(receiveData);
 }
+
+bool isChannel(){
+	
+}

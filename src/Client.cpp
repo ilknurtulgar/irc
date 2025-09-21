@@ -80,13 +80,14 @@ void Client::handleCommand(std::string &receiveData)
 	{
 		if(!isRegister())
 		{
-			std::string errorMsg = ":irc.server.com 451 * :You have not registered\r\n";
+			std::string errorMsg = ":irc.localhost 451 " + data[0] + " JOIN :You have not registered\r\n"; 
+			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
 		}
 
-	// if (data[0] == "JOIN") 	
-	// 	handleJoin(data);
+	if (data[0] == "JOIN") 	
+	 	handleJoin(data);
     // else if (data[0] == "PRIVMSG") handlePrivMsg(data);
     // else if (data[0] == "NOTICE") handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
