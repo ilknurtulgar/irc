@@ -53,6 +53,8 @@ class Server
 		void run();
 		bool isChannel(const std::string& name);
 		void checkChannel(Client* client, const std::string& channelName);
+		Client* getClientNick(std::string& nick);
+		Channel* getChannel(std::string& channel);
 		
 };
 

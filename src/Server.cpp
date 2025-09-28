@@ -194,3 +194,21 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
 	channel->broadcast(joinMsg, client);
 }
+
+Client* Server::getClientNick(std::string& nick){
+
+    for (std::map<int,Client*>::iterator it = clients.begin(); it != clients.end(); ++it){
+		if(it->second->getNick() != nick)
+			return it->second;
+	}
+	return NULL;
+}
+
+Channel* Server::getChannel(std::string& channel){
+
+	std::map<std::string, Channel*>::iterator it = channels.find(channel);
+	if(it != channels.end())
+		return it->second;
+	return nullptr;
+	
+}

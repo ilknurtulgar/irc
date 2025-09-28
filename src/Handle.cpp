@@ -117,6 +117,7 @@ void Client::handlePing(std::vector<std::string> data)
 
 void Client::handleJoin(std::vector<std::string> data)
 {
+    //join ile birden fazla kanala katılma durumuna bak
     if (data.size() < 2)
     {
         std::string errorMsg = "461 * USER :Not enough parameters\r\n";
@@ -135,23 +136,42 @@ void Client::handleJoin(std::vector<std::string> data)
 }
 
 void Client::handlePrivMsg(std::vector<std::string> data){
-    //PRIVMSG <target> :<message> 
-    //PRIVMSG Ali :Merhaba nasılsın?
-    //PRIVMSG #genel :Selam millet!
-    // target yoksa 411 ERR_NORECIPIENT
-    //mesaj boşsa 412 ERR_NOTEXTTOSEND
     
     if(data[1][0] == '#'){
+        
         std::cout << "channel msg" << std::endl;
         if(data[2][0] != ':'){
             std::string errorMsg = ":412 " + nickName + ":No text to send";
             send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
             return;
         }
-
-
+        
+        if(!server->isChannel(data[1])){
+            std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n"; 
+            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            return;
+        }
+        Channel* channel = server->getChannel(data[1]);
+        std::string msg = ":" + nickName + data[1] + data[2] + "\r\n";
+        channel->broadcast(msg,this);
+        
     }else {
-        //kişi listesinde ara 
+        if(data[2][0] != ':'){
+            std::string errorMsg = ":412 " + nickName + ":No text to send";
+            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            return;
+        }
+        
+        Client* nickClinet = server->getClientNick(data[1]);
+        
+        if(nickClinet == NULL){
+            std::string errorMsg = "401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
+            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            return;
+        }
+        
+        std::string msg = ":" + nickName + " PRIVMSG " + data[1] + " :" + data[2] + "\r\n";
+         send(nickClinet->getFd(),msg.c_str(),msg.length(),0);
     }
 
 }

@@ -18,13 +18,15 @@
 #include <unistd.h>
 #include <sstream>
 #include <vector>
+#include "Channel.hpp"
 
 class Server;
-class Chanel;
+class Channel;
 
 class Client
 {
 	private:
+
 	int clientSocketFd;
 	std::string nickName;
 	std::string userName;
@@ -33,9 +35,9 @@ class Client
 	std::string realName;
 	std::string serverPass;
 	Server *server;
-		bool signPass;
-		bool isRegistered[3];
-		bool hasWelcomed;
+	bool signPass;
+	bool isRegistered[3];
+	bool hasWelcomed;
 
 
 	public:
