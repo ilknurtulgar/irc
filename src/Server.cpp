@@ -197,11 +197,12 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 
 Client* Server::getClientNick(std::string& nick){
 
+	std::cout << nick << std::endl;
     for (std::map<int,Client*>::iterator it = clients.begin(); it != clients.end(); ++it){
-		if(it->second->getNick() != nick)
+		if(it->second->getNick() == nick)
 			return it->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 Channel* Server::getChannel(std::string& channel){
