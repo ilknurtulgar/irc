@@ -13,8 +13,8 @@
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
 
-Client::Client(int clientSocketFd, sockaddr_in clientAddr, std::string serverPass)
-	: clientSocketFd(clientSocketFd), clientAddr(clientAddr), serverPass(serverPass)
+Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
+	: clientSocketFd(clientSocketFd), serverPass(serverPass), server(srv)
 {
 	nickName = "";
 	userName = "";
@@ -28,6 +28,10 @@ Client::Client(int clientSocketFd, sockaddr_in clientAddr, std::string serverPas
 Client::~Client()
 {
 	close(clientSocketFd);
+}
+
+Server* Client::getServer()const{
+	return server;
 }
 
 void Client::handleCommand(std::string &receiveData)
@@ -57,14 +61,14 @@ void Client::handleCommand(std::string &receiveData)
 	if (!invalidCommand(data[0]))
 	{
 		std::cout << "Unknown command: " << data[0] << std::endl;
-		std::string errorMsg = ":irc.server.com 421 * INVALID :Unknown command\r\n";
+		std::string errorMsg = "421 * INVALID :Unknown command\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 		return;
 	}
 
 	if (!isSignedPassword() && data[0] != "PASS")
 	{
-		std::string errorMsg = ":irc.server.com 464 * :Password required\r\n";
+		std::string errorMsg = "464 * :Password required\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 		return;
 	}
@@ -75,12 +79,14 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
+	else if (data[0] == "PRIVMSG") 
+		handlePrivMsg(data);
 	
 	else
 	{
 		if(!isRegister())
 		{
-			std::string errorMsg = ":irc.localhost 451 " + data[0] + " JOIN :You have not registered\r\n"; 
+			std::string errorMsg = "451 " + data[0] + " JOIN :You have not registered\r\n"; 
 			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
@@ -88,7 +94,6 @@ void Client::handleCommand(std::string &receiveData)
 
 	if (data[0] == "JOIN") 	
 	 	handleJoin(data);
-    // else if (data[0] == "PRIVMSG") handlePrivMsg(data);
     // else if (data[0] == "NOTICE") handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
     // else if (data[0] == "KICK") handleKick(data);
@@ -105,10 +110,10 @@ void Client::handleCommand(std::string &receiveData)
 	
 	if (isRegister() && !hasWelcomed)
 	{
-		std::string msg001 = ":irc.localhost 001 " + nickName + " :Welcome to the IRC server, " + nickName + "!\r\n";
-		std::string msg002 = ":irc.localhost 002 " + nickName + " :Your host is irc.localhost, running version 0.1\r\n";
-		std::string msg003 = ":irc.localhost 003 " + nickName + " :This server was created just now\r\n";
-		std::string msg004 = ":irc.localhost 004 " + nickName + " irc.localhost 0.1 iowghraAsORTVSxNCWqBzvdHtGp\r\n";
+		std::string msg001 = "001 " + nickName + " :Welcome to the IRC server, " + nickName + "!\r\n";
+		std::string msg002 = "002 " + nickName + " :Your host is irc.localhost, running version 0.1\r\n";
+		std::string msg003 = "003 " + nickName + " :This server was created just now\r\n";
+		std::string msg004 = "004 " + nickName + " irc.localhost 0.1 iowghraAsORTVSxNCWqBzvdHtGp\r\n";
 
 		send(clientSocketFd, msg001.c_str(), msg001.length(), 0);
 		send(clientSocketFd, msg002.c_str(), msg002.length(), 0);
@@ -117,4 +122,12 @@ void Client::handleCommand(std::string &receiveData)
 
 		hasWelcomed = true;
 	}
+}
+
+int Client::getFd()const{
+	return clientSocketFd;
+}
+
+std::string Client::getNick()const{
+	return nickName;
 }

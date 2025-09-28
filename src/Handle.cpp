@@ -18,14 +18,14 @@ void Client::handlePass(std::vector<std::string> data)
 
     if (data.size() != 2)
     {
-        std::string errorMsg = ":irc.server.com 461 * PASS :Invalid number of parameters\r\n";
+        std::string errorMsg = "461 * PASS :Invalid number of parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
 
     if (data[1] != serverPass)
     {
-        std::string errorMsg = ":irc.server.com 464 * :Password incorrect\r\n";
+        std::string errorMsg = "464 * :Password incorrect\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -55,13 +55,13 @@ void Client::handleNick(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string errorMsg = ":irc.server.com 431 * :No nickname given\r\n";
+        std::string errorMsg = "431 * :No nickname given\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     if (!isValidNickname(data[1]))
     {
-        std::string errorMsg = ":irc.server.com 432 * " + data[1] + " :Erroneous nickname\r\n";
+        std::string errorMsg = "432 * " + data[1] + " :Erroneous nickname\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -74,7 +74,7 @@ void Client::handleUser(std::vector<std::string> data)
 {
     if (data.size() < 5 || data[4].size() < 2 || data[4][0] != ':')
     {
-        std::string errorMsg = ":irc.server.com 461 * USER :Not enough parameters\r\n";
+        std::string errorMsg = "461 * USER :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -115,24 +115,43 @@ void Client::handlePing(std::vector<std::string> data)
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
 
-// JOIN #a
-
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string errorMsg = ":irc.server.com 461 * USER :Not enough parameters\r\n";
+        std::string errorMsg = "461 * USER :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
 
-    else if (data.size() == 2)
-    {
         if (data[1][0] != '#')
         {
-            std::string errorMsg = "403 ERR_NOSUCHCHANNEL <nick> <channel> :No such channel\r\n";
+            std::string errorMsg = "403 ERR_NOSUCHCHANNEL" + nickName + " " + data[1] + " :No such channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
-        
+
+        server->checkChannel(this,data[1]);
+}
+
+void Client::handlePrivMsg(std::vector<std::string> data){
+    //PRIVMSG <target> :<message> 
+    //PRIVMSG Ali :Merhaba nasılsın?
+    //PRIVMSG #genel :Selam millet!
+    // target yoksa 411 ERR_NORECIPIENT
+    //mesaj boşsa 412 ERR_NOTEXTTOSEND
+    
+    if(data[1][0] == '#'){
+        std::cout << "channel msg" << std::endl;
+        if(data[2][0] != ':'){
+            std::string errorMsg = ":412 " + nickName + ":No text to send";
+            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            return;
+        }
+
+
+    }else {
+        //kişi listesinde ara 
     }
+
 }
