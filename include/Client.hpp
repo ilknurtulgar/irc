@@ -19,25 +19,30 @@
 #include <sstream>
 #include <vector>
 
+class Server;
+class Chanel;
+
 class Client
 {
 	private:
-		int clientSocketFd;
-		struct sockaddr_in clientAddr;
-		std::string nickName;
-		std::string userName;
-		std::string hostName;
-		std::string serverName;
-		std::string realName;
-		std::string serverPass;
+	int clientSocketFd;
+	std::string nickName;
+	std::string userName;
+	std::string hostName;
+	std::string serverName;
+	std::string realName;
+	std::string serverPass;
+	Server *server;
 		bool signPass;
 		bool isRegistered[3];
 		bool hasWelcomed;
 
 
 	public:
-		Client(int clientSocketFd, sockaddr_in clientAddr,std::string serverPass);
+		Client(int clientSocketFd,std::string serverPass, Server* srv);
 		~Client();
+
+		Server* getServer() const;
 		
 		void handleCommand(std::string &receiveData);
 		void handleNick(std::vector<std::string> data);
@@ -48,7 +53,11 @@ class Client
 		bool invalidCommand(const std::string& command);
 		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
+		void handlePrivMsg(std::vector<std::string> data);
 		bool isRegister();
+
+		int getFd()const;
+		std::string getNick()const;
 
 };
 
