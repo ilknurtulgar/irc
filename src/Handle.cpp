@@ -117,7 +117,8 @@ void Client::handlePing(std::vector<std::string> data)
 
 void Client::handleJoin(std::vector<std::string> data)
 {
-    //join ile birden fazla kanala katılma durumuna bak
+    //join de şifreli deneme kısmına bak
+
     if (data.size() < 2)
     {
         std::string errorMsg = "461 * USER :Not enough parameters\r\n";
@@ -136,35 +137,38 @@ void Client::handleJoin(std::vector<std::string> data)
 }
 
 void Client::handlePrivMsg(std::vector<std::string> data){
-    
-    if(data[1][0] == '#'){
-        
-        std::cout << "channel msg" << std::endl;
-        if(data[2][0] != ':'){
-            std::string errorMsg = ":412 " + nickName + ":No text to send";
+
+    if(data.size() < 3)
+    {
+        std::string errorMsg = "PRIVMSG: Not enough parameters.\r\n";
+        send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+        return ;
+    }
+
+    if(data[2][0] != ':'){
+            std::string errorMsg = ":412 " + nickName + ":No text to send\r\n";
             send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
             return;
-        }
-        
+    }
+
+    if(data[1][0] == '#'){
+
         if(!server->isChannel(data[1])){
             std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n"; 
             send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
             return;
         }
+
         Channel* channel = server->getChannel(data[1]);
         std::string msg = ":" + nickName + data[1] + data[2] + "\r\n";
         channel->broadcast(msg,this);
+        return;
         
-    }else {
-        if(data[2][0] != ':'){
-            std::string errorMsg = ":412 " + nickName + ":No text to send";
-            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
-            return;
-        }
-        
+    } else { 
         Client* nickClinet = server->getClientNick(data[1]);
+        std::cout << nickClinet << std::endl;
         
-        if(nickClinet == NULL){
+        if(nickClinet == nullptr){
             std::string errorMsg = "401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
             send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
             return;
@@ -172,6 +176,6 @@ void Client::handlePrivMsg(std::vector<std::string> data){
         
         std::string msg = ":" + nickName + " PRIVMSG " + data[1] + " :" + data[2] + "\r\n";
          send(nickClinet->getFd(),msg.c_str(),msg.length(),0);
+         return;
     }
-
 }
