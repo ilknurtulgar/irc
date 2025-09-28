@@ -53,6 +53,7 @@ class Client
 		bool invalidCommand(const std::string& command);
 		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
+		void handlePrivMsg(std::vector<std::string> data);
 		bool isRegister();
 
 		int getFd()const;
