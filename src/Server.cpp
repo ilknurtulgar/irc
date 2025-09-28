@@ -14,9 +14,7 @@
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
 
-Server::Server(int port, std::string password) : port(port), password(password)
-{
-}
+Server::Server(int port, std::string password) : port(port), password(password){}
 
 Server::~Server()
 {
@@ -135,10 +133,11 @@ void Server::acceptNewClient()
 		exit(EXIT_FAILURE);
 	}
 	
-	Client* newClient= new Client(newClientSocketFd, clientAddrr,password);
+	Client* newClient= new Client(newClientSocketFd, password,this);
 	clients[newClientSocketFd] = newClient;
 	
-	std::cout << "New client connected, socket fd: " << newClientSocketFd << std::endl;
+	std::cout << "IRC Server listening on port " << port << std::endl;
+	std::cout << "New client connected: " << newClientSocketFd << std::endl;
 	
 }
 
@@ -171,4 +170,27 @@ void Server::recvClientData(int clientSocketFd)
 	std::string receiveData(buffer);
 	
 	clients[clientSocketFd]-> handleCommand(receiveData);
+}
+
+bool Server::isChannel(const std::string &name){
+	if(channels.find(name) == channels.end())
+		return false;
+	return true;
+}
+
+void Server::checkChannel(Client *client,const std::string& channelName){
+	Channel *channel = nullptr;
+
+	if(isChannel(channelName))
+		channel = channels[channelName];
+	else{
+		channel = new Channel(channelName);
+		channels[channelName] = channel;
+	}
+
+	channel->addUser(client);
+	
+	std::string joinMsg = ":" + client->getNick() + " JOIN " + channelName + "\r\n";
+	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
+	channel->broadcast(joinMsg, client);
 }

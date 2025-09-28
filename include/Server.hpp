@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <map>
 #include "Client.hpp"
+#include "Channel.hpp"
 #include <cstdlib>
 #include <cstdio>
 
@@ -31,6 +32,7 @@
 #define BUFFER_SIZE 1024
 
 class Client;
+class Channel;
 
 class Server
 {
@@ -39,6 +41,8 @@ class Server
 		std::string password;
 		int serverSocketFd;
 		std::map<int, Client*> clients;
+		std::map<std::string, Channel*> channels;
+		
 		void setupServer();
 		void acceptNewClient();
 		void recvClientData(int clientSocketFd);
@@ -47,6 +51,8 @@ class Server
 		Server(int port, std::string password);
 		~Server();
 		void run();
+		bool isChannel(const std::string& name);
+		void checkChannel(Client* client, const std::string& channelName);
 		
 };
 

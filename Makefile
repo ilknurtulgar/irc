@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 
 RM = rm -rf
 
-SRCS = main.cpp ./src/Client.cpp ./src/Server.cpp ./src/Handle.cpp ./src/Invalid.cpp
+SRCS = main.cpp ./src/Client.cpp ./src/Server.cpp ./src/Handle.cpp ./src/Invalid.cpp ./src/Channel.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
