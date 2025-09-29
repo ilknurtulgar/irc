@@ -194,3 +194,44 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
 	channel->broadcast(joinMsg, client);
 }
+
+Client* Server::getClientNick(std::string& nick){
+
+    for (std::map<int,Client*>::iterator it = clients.begin(); it != clients.end(); ++it){
+		if(it->second->getNick() == nick)
+			return it->second;
+	}
+	return nullptr;
+}
+
+Channel* Server::getChannel(std::string& channel){
+
+	std::map<std::string, Channel*>::iterator it = channels.find(channel);
+	if(it != channels.end())
+		return it->second;
+	return nullptr;
+	
+}
+
+void Server::singleNames(Client *client){
+	for(std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it){
+		if(it->second->whereNames(client)){
+			
+		std::string msg = ":353 " +client->getNick() + " = " 
+                        + it->first + " :" + it->second->getNickList() + "\r\n";
+        send(client->getFd(), msg.c_str(), msg.length(), 0);
+
+        std::string endMsg = ":366 " + client->getNick() + " " 
+                           + it->first + " :End of /NAMES list\r\n";
+        send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
+		}
+	}
+}
+
+void Server::removeChannel(const std::string& channelName) {
+    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    if (it != channels.end()) {
+        delete it->second;
+        channels.erase(it);
+    }
+}
