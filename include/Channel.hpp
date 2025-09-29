@@ -17,17 +17,19 @@ class Client;
 
 class Channel
 {
-private:
-    std::string channelName;
-    std::string topic;
-    std::map<int, Client*> users;
-    std::set<Client*> operators;
-public:
-    Channel(const std::string &channelName);
-    ~Channel();
+    private:
+        std::string channelName;
+        std::string topic;
+        std::map<int, Client*> users;
+        std::set<Client*> operators;
+    public:
+        Channel(const std::string &channelName);
+        ~Channel();
 
-    void addUser(Client* client);
-    void broadcast(const std::string& msg, Client* client);
+        void addUser(Client* client);
+        void broadcast(const std::string& msg, Client* client);
+        bool whereNames(Client *client);
+        std::map<int, Client*>& getUsers() { return users; }
 
 
 };

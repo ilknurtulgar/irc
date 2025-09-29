@@ -117,6 +117,8 @@ void Client::handlePing(std::vector<std::string> data)
 
 void Client::handleJoin(std::vector<std::string> data)
 {
+    //join de şifreli deneme kısmına bak
+
     if (data.size() < 2)
     {
         std::string errorMsg = "461 * USER :Not enough parameters\r\n";
@@ -135,23 +137,101 @@ void Client::handleJoin(std::vector<std::string> data)
 }
 
 void Client::handlePrivMsg(std::vector<std::string> data){
-    //PRIVMSG <target> :<message> 
-    //PRIVMSG Ali :Merhaba nasılsın?
-    //PRIVMSG #genel :Selam millet!
-    // target yoksa 411 ERR_NORECIPIENT
-    //mesaj boşsa 412 ERR_NOTEXTTOSEND
-    
+
+    if(data.size() < 3)
+    {
+        std::string errorMsg = "PRIVMSG: Not enough parameters.\r\n";
+        send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+        return ;
+    }
+
+    if(data[2][0] != ':'){
+            std::string errorMsg = ":412 " + nickName + ":No text to send\r\n";
+            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            return;
+    }
+
     if(data[1][0] == '#'){
-        std::cout << "channel msg" << std::endl;
-        if(data[2][0] != ':'){
-            std::string errorMsg = ":412 " + nickName + ":No text to send";
+
+        if(!server->isChannel(data[1])){
+            std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n"; 
             send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
             return;
         }
 
-
-    }else {
-        //kişi listesinde ara 
+        Channel* channel = server->getChannel(data[1]);
+        std::string msg = ":" + nickName + data[1] + data[2] + "\r\n";
+        channel->broadcast(msg,this);
+        return;
+        
+    } else { 
+        Client* nickClinet = server->getClientNick(data[1]);
+        std::cout << nickClinet << std::endl;
+        
+        if(nickClinet == nullptr){
+            std::string errorMsg = "401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
+            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            return;
+        }
+        
+        std::string msg = ":" + nickName + " PRIVMSG " + data[1] + " :" + data[2] + "\r\n";
+         send(nickClinet->getFd(),msg.c_str(),msg.length(),0);
+         return;
     }
+}
 
+void Client::handleNames(std::vector<std::string> data){
+    if(data.size() == 1){
+        server->singleNames(this);
+    }
+}
+
+// komutta kanal adı var mı BAK
+// kanal var mı
+// kullanıcı kanalda var mı
+// mapten sil
+// bir kullanıcı varsa kanalı da sil
+void Client::handlePart(std::vector<std::string> data)
+{
+    if (data.size() < 2)
+    {
+        std::string errorMsg = "461 " + nickName + " PART :Not enough parameters\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        std::cout << "ERROR: " << nickName << " tried PART without parameters" << std::endl;
+        return;
+    }
+    std::stringstream commands(data[1]);
+    std::string channelName;
+    while (std::getline(commands, channelName, ','))
+    {
+        Channel *channel = server->getChannel(channelName);
+
+        if (!channel)
+        {
+            std::string errMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
+            send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
+            std::cout << "ERROR: " << nickName << " " << channelName << " :No such channel" << std::endl;
+            continue;
+        }
+
+        if (!channel->findUser(this))
+        {
+            std::string errMsg = "442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
+            send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
+            std::cout << "ERROR: " << nickName << " " << channelName << " :User not on channel" << std::endl;
+            continue;
+        }
+        std::string errMsg = ":" + nickName + "!" + userName + "@localhost PART " + channelName + "\r\n";
+        channel->broadcast(errMsg, this);
+        send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
+        std::cout << "PART: " << errMsg;
+
+        channel->removeUser(this);
+
+        if (channel->getUsers().empty())
+        {
+            server->removeChannel(channelName);
+            std::cout << "INFO: Channel " << channelName << " deleted" << std::endl;
+        }
+    }
 }

@@ -18,13 +18,15 @@
 #include <unistd.h>
 #include <sstream>
 #include <vector>
+#include "Channel.hpp"
 
 class Server;
-class Chanel;
+class Channel;
 
 class Client
 {
 	private:
+
 	int clientSocketFd;
 	std::string nickName;
 	std::string userName;
@@ -33,9 +35,9 @@ class Client
 	std::string realName;
 	std::string serverPass;
 	Server *server;
-		bool signPass;
-		bool isRegistered[3];
-		bool hasWelcomed;
+	bool signPass;
+	bool isRegistered[3];
+	bool hasWelcomed;
 
 
 	public:
@@ -54,7 +56,9 @@ class Client
 		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
 		void handlePrivMsg(std::vector<std::string> data);
+		void handleNames(std::vector<std::string> data);
 		bool isRegister();
+		void handlePart(std::vector<std::string> data);
 
 		int getFd()const;
 		std::string getNick()const;
