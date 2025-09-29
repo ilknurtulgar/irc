@@ -56,6 +56,7 @@ class Server
 		Client* getClientNick(std::string& nick);
 		Channel* getChannel(std::string& channel);
 		void singleNames(Client *client);
+		void removeChannel(const std::string& channelName);
 		
 };
 

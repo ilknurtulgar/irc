@@ -19,3 +19,11 @@ bool Channel::whereNames(Client *client){
     
     return (users.find(client->getFd()) != users.end());
 }
+
+void Channel::removeUser(Client* client){
+    users.erase(client->getFd());
+}
+
+bool Channel::findUser(Client* client) const {
+    return users.find(client->getFd()) != users.end();
+}

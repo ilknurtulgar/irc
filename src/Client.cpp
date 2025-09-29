@@ -79,7 +79,9 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
-		
+	else if (data[0] == "PART") 
+		handlePart(data);
+	
 		else
 		{
 			if(!isRegister())

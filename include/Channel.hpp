@@ -29,6 +29,7 @@ class Channel
         void addUser(Client* client);
         void broadcast(const std::string& msg, Client* client);
         bool whereNames(Client *client);
+        std::map<int, Client*>& getUsers() { return users; }
 
 
 };

@@ -227,3 +227,11 @@ void Server::singleNames(Client *client){
 		}
 	}
 }
+
+void Server::removeChannel(const std::string& channelName) {
+    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    if (it != channels.end()) {
+        delete it->second;
+        channels.erase(it);
+    }
+}

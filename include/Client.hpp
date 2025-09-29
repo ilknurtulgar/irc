@@ -58,6 +58,7 @@ class Client
 		void handlePrivMsg(std::vector<std::string> data);
 		void handleNames(std::vector<std::string> data);
 		bool isRegister();
+		void handlePart(std::vector<std::string> data);
 
 		int getFd()const;
 		std::string getNick()const;
