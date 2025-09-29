@@ -179,3 +179,9 @@ void Client::handlePrivMsg(std::vector<std::string> data){
          return;
     }
 }
+
+void Client::handleNames(std::vector<std::string> data){
+    if(data.size() == 1){
+        server->singleNames(this);
+    }
+}

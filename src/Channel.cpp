@@ -14,3 +14,8 @@ void Channel::broadcast(const std::string& msg, Client* client){
             send(it->second->getFd(),msg.c_str(),msg.length(),0);
     }
 }
+
+bool Channel::whereNames(Client *client){
+    
+    return (users.find(client->getFd()) != users.end());
+}

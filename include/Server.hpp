@@ -55,6 +55,7 @@ class Server
 		void checkChannel(Client* client, const std::string& channelName);
 		Client* getClientNick(std::string& nick);
 		Channel* getChannel(std::string& channel);
+		void singleNames(Client *client);
 		
 };
 

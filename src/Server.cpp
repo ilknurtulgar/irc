@@ -197,7 +197,6 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 
 Client* Server::getClientNick(std::string& nick){
 
-	std::cout << nick << std::endl;
     for (std::map<int,Client*>::iterator it = clients.begin(); it != clients.end(); ++it){
 		if(it->second->getNick() == nick)
 			return it->second;
@@ -212,4 +211,19 @@ Channel* Server::getChannel(std::string& channel){
 		return it->second;
 	return nullptr;
 	
+}
+
+void Server::singleNames(Client *client){
+	for(std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it){
+		if(it->second->whereNames(client)){
+			
+		std::string msg = ":353 " +client->getNick() + " = " 
+                        + it->first + " :" + it->second->getNickList() + "\r\n";
+        send(client->getFd(), msg.c_str(), msg.length(), 0);
+
+        std::string endMsg = ":366 " + client->getNick() + " " 
+                           + it->first + " :End of /NAMES list\r\n";
+        send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
+		}
+	}
 }
