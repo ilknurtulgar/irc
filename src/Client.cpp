@@ -81,6 +81,8 @@ void Client::handleCommand(std::string &receiveData)
 		handleNick(data);
 	else if (data[0] == "PART") 
 		handlePart(data);
+	else if (data[0] == "QUIT") 
+		handleQuit(data);
 	
 		else
 		{
@@ -108,8 +110,6 @@ void Client::handleCommand(std::string &receiveData)
     // else if (data[0] == "PART") handlePart(data);
 	if (data[0] == "PING") 
 		handlePing(data);
-    // else if (data[0] == "QUIT") handleQuit(data);
-	}
 	
 	if (isRegister() && !hasWelcomed)
 	{

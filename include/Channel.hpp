@@ -30,6 +30,8 @@ class Channel
         void broadcast(const std::string& msg, Client* client);
         bool whereNames(Client *client);
         std::map<int, Client*>& getUsers() { return users; }
+        void removeUser(Client* client);
+        bool findUser(Client* client) const;
 
 
 };
