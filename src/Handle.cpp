@@ -235,3 +235,24 @@ void Client::handlePart(std::vector<std::string> data)
         }
     }
 }
+// QUIT iteratorle kanalı sil çıktı= :nick!user@host QUIT :Client quit
+
+//QUIT :mesaj varsa mesajı da göster ekranda çıktısı= :nick!user@host QUIT :mdsaj
+//kullanıcı tüm kanallardan çıkacak
+//socket kapat!!!!!!!!!!!!
+// client sil!!!!!!!!!!
+
+void Client::handleQuit(std::vector<std::string> data)
+{
+     std::string message = "Client Quit";
+    if(data.size() > 1)
+        message = data[1];
+    if (!message.empty() && message[0] == ':')
+        message = message.substr(1);
+
+    std::string msg = ":" + nickName + "!" + userName + "@localhost QUIT :" + message + "\r\n";
+
+
+    close(clientSocketFd);
+    //deleteClient();
+}
