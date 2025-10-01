@@ -195,6 +195,32 @@ void Client::handleNames(std::vector<std::string> data)
     {
         server->singleNames(this);
     }
+    else if(data.size() != 2)
+    {
+        std::string errorMsg = "421 * INVALID :Unknown command\r\n";
+		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+    }
+
+    std::stringstream commands(data[1]);
+    std::string channelName;
+    while (std::getline(commands, channelName, ','))
+    {
+        if (channelName.empty() || channelName[0] != '#' || !server->isChannel(channelName))
+        {
+            std::string errorMsg = ":403 " + nickName + " " + channelName + " :No such channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            continue;
+        }
+       Channel *channel = server->getChannel(channelName);
+       std::string nickList = channel->getNickList();
+       std::string errorMsg1 = ":353 " + nickName + " = "  + channelName + " :" + nickList + "\r\n";
+       send(clientSocketFd, errorMsg1.c_str(), errorMsg1.length(), 0);
+
+       std::string errorMsg2 = ":366 " + nickName + " "  + channelName + " :End of /NAMES list\r\n";
+       send(clientSocketFd, errorMsg2.c_str(), errorMsg2.length(), 0);
+    
+    }
 }
 
 // komutta kanal adı var mı BAK
