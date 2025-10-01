@@ -235,3 +235,4 @@ void Server::removeChannel(const std::string& channelName) {
         channels.erase(it);
     }
 }
+

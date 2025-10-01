@@ -27,3 +27,10 @@ void Channel::removeUser(Client* client){
 bool Channel::findUser(Client* client) const {
     return users.find(client->getFd()) != users.end();
 }
+
+std::string Channel::getChannelName() const {
+    return channelName;
+}
+
+
+
