@@ -117,72 +117,109 @@ void Client::handlePing(std::vector<std::string> data)
 
 void Client::handleJoin(std::vector<std::string> data)
 {
-    //join de şifreli deneme kısmına bak
-
     if (data.size() < 2)
     {
-        std::string errorMsg = "461 * USER :Not enough parameters\r\n";
+        std::string errorMsg = "461 * JOIN :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
 
-        if (data[1][0] != '#')
+    std::stringstream commands(data[1]);
+    std::string channelName;
+    while (std::getline(commands, channelName, ','))
+    {
+        if (channelName.empty() || channelName[0] != '#')
         {
-            std::string errorMsg = "403 ERR_NOSUCHCHANNEL" + nickName + " " + data[1] + " :No such channel\r\n";
+            std::string errorMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            continue;
+        }
+
+        server->checkChannel(this, channelName);
+    }
+}
+
+void Client::handlePrivMsg(std::vector<std::string> data)
+{
+
+    if (data.size() < 3)
+    {
+        std::string errorMsg = "PRIVMSG: Not enough parameters.\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+
+    if (data[2][0] != ':')
+    {
+        std::string errorMsg = ":412 " + nickName + ":No text to send\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+
+    if (data[1][0] == '#')
+    {
+
+        if (!server->isChannel(data[1]))
+        {
+            std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
 
-        server->checkChannel(this,data[1]);
-}
-
-void Client::handlePrivMsg(std::vector<std::string> data){
-
-    if(data.size() < 3)
-    {
-        std::string errorMsg = "PRIVMSG: Not enough parameters.\r\n";
-        send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
-        return ;
-    }
-
-    if(data[2][0] != ':'){
-            std::string errorMsg = ":412 " + nickName + ":No text to send\r\n";
-            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
-            return;
-    }
-
-    if(data[1][0] == '#'){
-
-        if(!server->isChannel(data[1])){
-            std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n"; 
-            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
-            return;
-        }
-
-        Channel* channel = server->getChannel(data[1]);
+        Channel *channel = server->getChannel(data[1]);
         std::string msg = ":" + nickName + data[1] + data[2] + "\r\n";
-        channel->broadcast(msg,this);
+        channel->broadcast(msg, this);
         return;
-        
-    } else { 
-        Client* nickClinet = server->getClientNick(data[1]);
+    }
+    else
+    {
+        Client *nickClinet = server->getClientNick(data[1]);
         std::cout << nickClinet << std::endl;
-        
-        if(nickClinet == nullptr){
+
+        if (nickClinet == nullptr)
+        {
             std::string errorMsg = "401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
-            send(clientSocketFd,errorMsg.c_str(),errorMsg.length(),0);
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
-        
+
         std::string msg = ":" + nickName + " PRIVMSG " + data[1] + " :" + data[2] + "\r\n";
-         send(nickClinet->getFd(),msg.c_str(),msg.length(),0);
-         return;
+        send(nickClinet->getFd(), msg.c_str(), msg.length(), 0);
+        return;
     }
 }
 
-void Client::handleNames(std::vector<std::string> data){
-    if(data.size() == 1){
+void Client::handleNames(std::vector<std::string> data)
+{
+    if (data.size() == 1)
+    {
         server->singleNames(this);
+    }
+    else if(data.size() != 2)
+    {
+        std::string errorMsg = "421 * INVALID :Unknown command\r\n";
+		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+    }
+
+    std::stringstream commands(data[1]);
+    std::string channelName;
+    while (std::getline(commands, channelName, ','))
+    {
+        if (channelName.empty() || channelName[0] != '#' || !server->isChannel(channelName))
+        {
+            std::string errorMsg = ":403 " + nickName + " " + channelName + " :No such channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            continue;
+        }
+       Channel *channel = server->getChannel(channelName);
+       std::string nickList = channel->getNickList();
+       std::string errorMsg1 = ":353 " + nickName + " = "  + channelName + " :" + nickList + "\r\n";
+       send(clientSocketFd, errorMsg1.c_str(), errorMsg1.length(), 0);
+
+       std::string errorMsg2 = ":366 " + nickName + " "  + channelName + " :End of /NAMES list\r\n";
+       send(clientSocketFd, errorMsg2.c_str(), errorMsg2.length(), 0);
+    
     }
 }
 
@@ -237,22 +274,33 @@ void Client::handlePart(std::vector<std::string> data)
 }
 // QUIT iteratorle kanalı sil çıktı= :nick!user@host QUIT :Client quit
 
-//QUIT :mesaj varsa mesajı da göster ekranda çıktısı= :nick!user@host QUIT :mdsaj
-//kullanıcı tüm kanallardan çıkacak
-//socket kapat!!!!!!!!!!!!
-// client sil!!!!!!!!!!
+// QUIT :mesaj varsa mesajı da göster ekranda çıktısı= :nick!user@host QUIT :mdsaj
+// kullanıcı tüm kanallardan çıkacak
+// socket kapat!!!!!!!!!!!!
+//  client sil!!!!!!!!!!
 
-void Client::handleQuit(std::vector<std::string> data)
-{
-     std::string message = "Client Quit";
-    if(data.size() > 1)
-        message = data[1];
-    if (!message.empty() && message[0] == ':')
-        message = message.substr(1);
+// void Client::handleQuit(std::vector<std::string> data)
+// {
+//     std::string message = "Client Quit";
+//     if (data.size() > 1)
+//         message = data[1];
+//     if (!message.empty() && message[0] == ':')
+//         message = message.substr(1);
 
-    std::string msg = ":" + nickName + "!" + userName + "@localhost QUIT :" + message + "\r\n";
+//     std::string errMsg = ":" + nickName + "!" + userName + "@localhost QUIT :" + message + "\r\n";
+//     for (std::map<std::string, Channel *>::iterator it = server->getChannel().begin();
+//          it != server->getChannel().end(); ++it)
+//     {
+//         Channel *channel = it->second;
+//         if (channel->findUser(this))
+//         {
+//             channel->broadcast(errMsg, this); // diğer kullanıcılara QUIT mesajını gönder
+//             channel->removeUser(this);     // kendimizi kanaldan çıkar
+//             if (channel->getUsers().empty())
+//                 server->removeChannel(channel->getChannelName()); // kanal boşsa sil
+//         }
+//     }
 
-
-    close(clientSocketFd);
-    //deleteClient();
-}
+//     close(clientSocketFd);
+//     // deleteClient();
+// }

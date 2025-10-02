@@ -21,7 +21,7 @@ class Channel
         std::string channelName;
         std::string topic;
         std::map<int, Client*> users;
-        std::set<Client*> operators;
+        std::set<Client*> operators; //@kullanıcı
     public:
         Channel(const std::string &channelName);
         ~Channel();
@@ -32,7 +32,8 @@ class Channel
         std::map<int, Client*>& getUsers() { return users; }
         void removeUser(Client* client);
         bool findUser(Client* client) const;
-
+        //std::string getChannelName() const;
+        std::string getNickList()const;
 
 };
 
