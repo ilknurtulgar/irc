@@ -81,25 +81,24 @@ void Client::handleCommand(std::string &receiveData)
 		handleNick(data);
 	else if (data[0] == "PART") 
 		handlePart(data);
-	else if (data[0] == "QUIT") 
-		handleQuit(data);
+	// else if (data[0] == "QUIT") 
+	// 	handleQuit(data);
 	
-		else
+	else
+	{
+		if(!isRegister())
 		{
-			if(!isRegister())
-			{
-				std::string errorMsg = "451 " + data[0] + " JOIN :You have not registered\r\n"; 
-				std::cout << " data[0] rejected: Not fully registered." << std::endl;
-				send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-				return;
-			}
-			
-			if (data[0] == "JOIN") 	
+			std::string errorMsg = "451 " + data[0] + " JOIN :You have not registered\r\n"; 
+			std::cout << " data[0] rejected: Not fully registered." << std::endl;
+			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+			return;
+		}	
+		if (data[0] == "JOIN") 	
 			handleJoin(data);
-			else if (data[0] == "PRIVMSG") 
-				handlePrivMsg(data);
-		    else if (data[0] == "NAMES") 
-				handleNames(data);
+		else if (data[0] == "PRIVMSG") 
+			handlePrivMsg(data);
+		else if (data[0] == "NAMES") 
+			handleNames(data);
     // else if (data[0] == "NOTICE") handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
     // else if (data[0] == "KICK") handleKick(data);
@@ -110,7 +109,7 @@ void Client::handleCommand(std::string &receiveData)
     // else if (data[0] == "PART") handlePart(data);
 	if (data[0] == "PING") 
 		handlePing(data);
-	
+	}
 	if (isRegister() && !hasWelcomed)
 	{
 		std::string msg001 = "001 " + nickName + " :Welcome to the IRC server, " + nickName + "!\r\n";

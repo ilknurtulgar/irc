@@ -27,3 +27,26 @@ void Channel::removeUser(Client* client){
 bool Channel::findUser(Client* client) const {
     return users.find(client->getFd()) != users.end();
 }
+
+
+// std::string Channel::getChannelName() const {
+//     return channelName;
+// }
+
+std::string Channel::getNickList()const{
+    std::string nick;
+    for(std::map<int, Client*>::const_iterator it = users.begin(); it != users.end();++it){
+        Client *client = it->second;
+
+        if(!nick.empty())
+            nick += " ";
+        
+
+        if(operators.find(client) != operators.end())
+            nick += "@" + client->getNick();
+        else
+            nick += client->getNick(); 
+    }
+    return nick;
+}
+
