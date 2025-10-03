@@ -304,3 +304,39 @@ void Client::handlePart(std::vector<std::string> data)
 //     close(clientSocketFd);
 //     // deleteClient();
 // }
+
+void Client::handleWho(std::vector<std::string> data){
+    if(data.size() < 2){
+        std::string err = "461 " + nickName + " WHO :Not enough parameters\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }else if(data.size() > 2){
+        std::string err = "461 " + nickName + " WHO :Too many parameters\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+
+    if(!server->isChannel(data[1])){
+         std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    Channel *channel = server->getChannel(data[1]);
+    
+    std::map<int, Client*> members = channel->getUsers();
+
+    for (std::map<int, Client*>::const_iterator it = members.begin(); it != members.end(); ++it){
+        Client *member = it->second;
+
+        std::string flag = "H";
+        if(channel->isOperator(member))
+            flag += "@";
+         std::string msg = ":irc.localhost 352 " + member->getNickName() + " " + data[1] + " "
+                    +member->getUserName() + " " + member->getHostName() + " irc.localhost "
+                    + member->getNickName() + " " + flag + " :0 " + member->getRealName() + "\r\n";
+        send(clientSocketFd, msg.c_str(), msg.length(), 0);
+    }
+
+    std::string endMsg = ":315 " + nickName + " " + data[1] + " :End of WHO list\r\n";
+    send(clientSocketFd, endMsg.c_str(), endMsg.length(), 0);
+}

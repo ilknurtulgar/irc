@@ -43,10 +43,13 @@ std::string Channel::getNickList()const{
         
 
         if(operators.find(client) != operators.end())
-            nick += "@" + client->getNick();
+            nick += "@" + client->getNickName();
         else
-            nick += client->getNick(); 
+            nick += client->getNickName(); 
     }
     return nick;
 }
 
+bool Channel::isOperator(Client *client) const{
+    return operators.find(client) != operators.end(); 
+}

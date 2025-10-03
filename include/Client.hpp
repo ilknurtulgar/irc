@@ -50,20 +50,23 @@ class Client
 		void handleNick(std::vector<std::string> data);
 		void handlePing(std::vector<std::string> data);
 		void handleJoin(std::vector<std::string> data);
-		
-		bool isSignedPassword();
-		bool invalidCommand(const std::string& command);
-		void handlePass(std::vector<std::string> data);
 		void handleUser(std::vector<std::string> data);
 		void handlePrivMsg(std::vector<std::string> data);
 		void handleNames(std::vector<std::string> data);
-		bool isRegister();
 		void handlePart(std::vector<std::string> data);
 		void handleQuit(std::vector<std::string> data);
+		void handleWho(std::vector<std::string> data);
+		void handlePass(std::vector<std::string> data);
 
+		bool isRegister();
 		int getFd()const;
-		std::string getNick()const;
-
+		bool isSignedPassword();
+		bool invalidCommand(const std::string& command);
+		
+		std::string getHostName()const;
+		std::string getNickName()const;
+		std::string getRealName()const;
+		std::string getUserName()const;
 };
 
 
