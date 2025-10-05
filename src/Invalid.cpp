@@ -23,7 +23,7 @@ bool Client::invalidCommand(const std::string& command){
             command == "USER" || command == "JOIN" || command == "PING" || command == "NAMES" || command == "WHO" ||
             command == "PRIVMSG" || command == "KICK" ||
             command == "INVITE" || command == "TOPIC" ||
-            command == "MODE" || command == "QUIT" || command == "PART");
+            command == "MODE" || command == "QUIT" || command == "PART" || command == "NOTICE");
 	
 }
 

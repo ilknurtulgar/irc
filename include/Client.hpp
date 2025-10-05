@@ -58,6 +58,8 @@ class Client
 		void handleWho(std::vector<std::string> data);
 		void handlePass(std::vector<std::string> data);
 		void handleKick(std::vector<std::string> data);
+		void handleInvite(std::vector<std::string> data);
+		void handleNotice(std::vector<std::string> data);
 
 		bool isRegister();
 		int getFd()const;

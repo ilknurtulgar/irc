@@ -350,6 +350,7 @@ void Client::handleWho(std::vector<std::string> data)
     send(clientSocketFd, endMsg.c_str(), endMsg.length(), 0);
 }
 
+
 void Client::handleKick(std::vector<std::string> data){
     if(data.size() < 3){
         std::string err = "461 " + nickName + " KICK :Not enough parameters\r\n";
@@ -405,4 +406,79 @@ void Client::handleKick(std::vector<std::string> data){
              " KICK " + data[1] + " " + data[2] + " :" + msg + "\r\n";
         channel->broadcast(clientMsg, nullptr);
         channel->removeUser(userClient);
+}
+
+//üç parametre
+//kanal var mı
+//davet eden kanal da mı
+//edilen kullanıcı var mı
+
+void Client::handleInvite(std::vector<std::string> data)
+{
+    if (data.size() < 3)
+    {
+        std::string errorMsg = "461 " + nickName + " INVITE :Not enough parameters\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    std::string inviteNick = data[1];
+    std::string channelName = data[2];
+    if (!server->isChannel(channelName))
+    {
+        std::string errorMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+
+    Channel *channel = server->getChannel(channelName);
+    if (!channel->findUser(this))
+    {
+        std::string errorMsg = "442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    Client *inviteClient = server->getClientNick(inviteNick);
+    if (!inviteClient)
+    {
+        std::string errorMsg = "401 " + nickName + " " + inviteNick + " :No such nick/channel\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    std::string inviteMsg = ":" + nickName + " INVITE " + inviteNick + " :" + channelName + "\r\n";
+    send(inviteClient->getFd(), inviteMsg.c_str(), inviteMsg.length(), 0);
+
+    std::string message = ":" + nickName + " INVITE " + inviteNick + " :" + channelName + "\r\n";
+    send(clientSocketFd, message.c_str(), message.length(), 0);
+}
+
+// notice suer :mesaj
+//kullanıcıysa hedef kullanıcı var mı
+/// kanalsa hedef kanal var mı
+// EKSİK PARAMETRE MESSJI VERMEZ RFC 1459 BUNDAN DOLAYII hata mesajı döndürmez
+void Client::handleNotice(std::vector<std::string> data)
+{
+      if (data.size() < 3)
+        return;
+    
+    std::string user = data[1];
+    std::string message = data[2];
+    if (!message.empty() && message[0] == ':')
+        message.erase(0, 1);
+    if (user[0] == '#')
+    {
+        if (!server->isChannel(user))
+            return;
+        Channel *channel = server->getChannel(user);
+        std::string errormsg = ":" + nickName + " NOTICE " + user + " :" + message + "\r\n";
+        channel->broadcast(errormsg, this);
+    }
+     else
+    {
+        Client *userClient = server->getClientNick(user);
+        if (!userClient)
+            return;
+        std::string errormsg = ":" + nickName + " NOTICE " + user + " :" + message + "\r\n";
+        send(userClient->getFd(), errormsg.c_str(), errormsg.length(), 0);
+    }
+
 }
