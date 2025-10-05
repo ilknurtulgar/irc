@@ -55,3 +55,11 @@ std::string Channel::getNickList()const{
 bool Channel::isOperator(Client *client) const{
     return operators.find(client) != operators.end(); 
 }
+
+std::string Channel::getTopic()const{
+    return topic;
+}
+
+void Channel::setTopic(std::string &topic){
+    this->topic = topic;
+}

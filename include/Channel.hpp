@@ -34,6 +34,8 @@ class Channel
         bool findUser(Client* client) const;
         std::string getChannelName() const;
         std::string getNickList()const;
+        std::string getTopic()const;
+        void setTopic(std::string &topic);
         bool isOperator(Client *client)const;
 
 };

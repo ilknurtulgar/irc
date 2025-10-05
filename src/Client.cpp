@@ -105,7 +105,9 @@ void Client::handleCommand(std::string &receiveData)
 	 		handleQuit(data);
 		else if (data[0] == "KICK") 
 			handleKick(data);
-
+		else if (data[0] == "TOPIC") 
+			handleTopic(data);
+    // else if (data[0] == "NOTICE") handleNotice(data);
     	else if (data[0] == "NOTICE") 
 			handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
