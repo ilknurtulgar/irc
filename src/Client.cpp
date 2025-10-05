@@ -79,10 +79,6 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
-	else if (data[0] == "PART") 
-		handlePart(data);
-	// else if (data[0] == "QUIT") 
-	// 	handleQuit(data);
 	
 	else
 	{
@@ -103,6 +99,10 @@ void Client::handleCommand(std::string &receiveData)
 			handleWho(data);
 		if (data[0] == "PING") 
 			handlePing(data);
+		if (data[0] == "PART") 
+			handlePart(data);
+		if (data[0] == "QUIT") 
+	 		handleQuit(data);
     // else if (data[0] == "NOTICE") handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
     // else if (data[0] == "KICK") handleKick(data);

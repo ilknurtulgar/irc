@@ -195,11 +195,11 @@ void Client::handleNames(std::vector<std::string> data)
     {
         server->singleNames(this);
     }
-    else if(data.size() != 2)
+    else if (data.size() != 2)
     {
         std::string errorMsg = "421 * INVALID :Unknown command\r\n";
-		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
     }
 
     std::stringstream commands(data[1]);
@@ -212,14 +212,13 @@ void Client::handleNames(std::vector<std::string> data)
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             continue;
         }
-       Channel *channel = server->getChannel(channelName);
-       std::string nickList = channel->getNickList();
-       std::string errorMsg1 = ":353 " + nickName + " = "  + channelName + " :" + nickList + "\r\n";
-       send(clientSocketFd, errorMsg1.c_str(), errorMsg1.length(), 0);
+        Channel *channel = server->getChannel(channelName);
+        std::string nickList = channel->getNickList();
+        std::string errorMsg1 = ":353 " + nickName + " = " + channelName + " :" + nickList + "\r\n";
+        send(clientSocketFd, errorMsg1.c_str(), errorMsg1.length(), 0);
 
-       std::string errorMsg2 = ":366 " + nickName + " "  + channelName + " :End of /NAMES list\r\n";
-       send(clientSocketFd, errorMsg2.c_str(), errorMsg2.length(), 0);
-    
+        std::string errorMsg2 = ":366 " + nickName + " " + channelName + " :End of /NAMES list\r\n";
+        send(clientSocketFd, errorMsg2.c_str(), errorMsg2.length(), 0);
     }
 }
 
@@ -234,20 +233,28 @@ void Client::handlePart(std::vector<std::string> data)
     {
         std::string errorMsg = "461 " + nickName + " PART :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-        std::cout << "ERROR: " << nickName << " tried PART without parameters" << std::endl;
         return;
     }
-    std::stringstream commands(data[1]);
+
+    std::string message = "";
+    if (data.size() > 2)
+    {
+        message = data[2];
+        if (!message.empty() && message[0] == ':')
+            message = message.substr(1);
+        for (size_t i = 3; i < data.size(); ++i)
+            message += " " + data[i];
+    }
+
+    std::stringstream ss(data[1]);
     std::string channelName;
-    while (std::getline(commands, channelName, ','))
+    while (std::getline(ss, channelName, ','))
     {
         Channel *channel = server->getChannel(channelName);
-
         if (!channel)
         {
             std::string errMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
             send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
-            std::cout << "ERROR: " << nickName << " " << channelName << " :No such channel" << std::endl;
             continue;
         }
 
@@ -255,16 +262,18 @@ void Client::handlePart(std::vector<std::string> data)
         {
             std::string errMsg = "442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
             send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
-            std::cout << "ERROR: " << nickName << " " << channelName << " :User not on channel" << std::endl;
             continue;
         }
-        std::string errMsg = ":" + nickName + "!" + userName + "@localhost PART " + channelName + "\r\n";
-        channel->broadcast(errMsg, this);
-        send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
-        std::cout << "PART: " << errMsg;
+
+        std::string partMsg = ":" + nickName + "!" + userName + "@localhost PART " + channelName;
+        if (!message.empty())
+            partMsg += " :" + message;
+        partMsg += "\r\n";
+
+        channel->broadcast(partMsg, this);
+        send(clientSocketFd, partMsg.c_str(), partMsg.length(), 0);
 
         channel->removeUser(this);
-
         if (channel->getUsers().empty())
         {
             server->removeChannel(channelName);
@@ -272,6 +281,7 @@ void Client::handlePart(std::vector<std::string> data)
         }
     }
 }
+
 // QUIT iteratorle kanalı sil çıktı= :nick!user@host QUIT :Client quit
 
 // QUIT :mesaj varsa mesajı da göster ekranda çıktısı= :nick!user@host QUIT :mdsaj
@@ -279,61 +289,60 @@ void Client::handlePart(std::vector<std::string> data)
 // socket kapat!!!!!!!!!!!!
 //  client sil!!!!!!!!!!
 
-// void Client::handleQuit(std::vector<std::string> data)
-// {
-//     std::string message = "Client Quit";
-//     if (data.size() > 1)
-//         message = data[1];
-//     if (!message.empty() && message[0] == ':')
-//         message = message.substr(1);
+void Client::handleQuit(std::vector<std::string> data)
+{
+    std::string message = "Client Quit";
+    if (data.size() > 1)
+    {
+        message = data[1];
+        if (!message.empty() && message[0] == ':')
+            message = message.substr(1);
+        for (size_t i = 2; i < data.size(); ++i)
+            message += " " + data[i];
+    }
+    std::string host = hostName.empty() ? "localhost" : hostName;
+    std::string errMsg = ":" + nickName + "!" + userName + "@" + host + " QUIT";
+    if (!message.empty())
+        errMsg += " :" + message;
+    errMsg += "\r\n";
+    send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
+    server->removeClient(clientSocketFd, errMsg);
+    close(clientSocketFd);
+}
 
-//     std::string errMsg = ":" + nickName + "!" + userName + "@localhost QUIT :" + message + "\r\n";
-//     for (std::map<std::string, Channel *>::iterator it = server->getChannel().begin();
-//          it != server->getChannel().end(); ++it)
-//     {
-//         Channel *channel = it->second;
-//         if (channel->findUser(this))
-//         {
-//             channel->broadcast(errMsg, this); // diğer kullanıcılara QUIT mesajını gönder
-//             channel->removeUser(this);     // kendimizi kanaldan çıkar
-//             if (channel->getUsers().empty())
-//                 server->removeChannel(channel->getChannelName()); // kanal boşsa sil
-//         }
-//     }
-
-//     close(clientSocketFd);
-//     // deleteClient();
-// }
-
-void Client::handleWho(std::vector<std::string> data){
-    if(data.size() < 2){
+void Client::handleWho(std::vector<std::string> data)
+{
+    if (data.size() < 2)
+    {
         std::string err = "461 " + nickName + " WHO :Not enough parameters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
-    }else if(data.size() > 2){
+    }
+    else if (data.size() > 2)
+    {
         std::string err = "461 " + nickName + " WHO :Too many parameters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
 
-    if(!server->isChannel(data[1])){
-         std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+    if (!server->isChannel(data[1]))
+    {
+        std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     Channel *channel = server->getChannel(data[1]);
-    
-    std::map<int, Client*> members = channel->getUsers();
 
-    for (std::map<int, Client*>::const_iterator it = members.begin(); it != members.end(); ++it){
+    std::map<int, Client *> members = channel->getUsers();
+
+    for (std::map<int, Client *>::const_iterator it = members.begin(); it != members.end(); ++it)
+    {
         Client *member = it->second;
 
         std::string flag = "H";
-        if(channel->isOperator(member))
+        if (channel->isOperator(member))
             flag += "@";
-         std::string msg = ":irc.localhost 352 " + member->getNickName() + " " + data[1] + " "
-                    +member->getUserName() + " " + member->getHostName() + " irc.localhost "
-                    + member->getNickName() + " " + flag + " :0 " + member->getRealName() + "\r\n";
+        std::string msg = ":irc.localhost 352 " + member->getNickName() + " " + data[1] + " " + member->getUserName() + " " + member->getHostName() + " irc.localhost " + member->getNickName() + " " + flag + " :0 " + member->getRealName() + "\r\n";
         send(clientSocketFd, msg.c_str(), msg.length(), 0);
     }
 

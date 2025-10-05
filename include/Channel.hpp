@@ -32,7 +32,7 @@ class Channel
         std::map<int, Client*>& getUsers() { return users; }
         void removeUser(Client* client);
         bool findUser(Client* client) const;
-        //std::string getChannelName() const;
+        std::string getChannelName() const;
         std::string getNickList()const;
         bool isOperator(Client *client)const;
 

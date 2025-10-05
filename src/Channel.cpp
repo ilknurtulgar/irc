@@ -29,9 +29,9 @@ bool Channel::findUser(Client* client) const {
 }
 
 
-// std::string Channel::getChannelName() const {
-//     return channelName;
-// }
+std::string Channel::getChannelName() const {
+    return channelName;
+}
 
 std::string Channel::getNickList()const{
     std::string nick;

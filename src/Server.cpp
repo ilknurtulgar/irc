@@ -236,3 +236,29 @@ void Server::removeChannel(const std::string& channelName) {
     }
 }
 
+void Server::removeClient(int clientSocketFd, const std::string& message)
+{
+    std::map<int, Client*>::iterator it = clients.find(clientSocketFd);
+    if (it == clients.end())
+        return;
+    Client* client = it->second;
+    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); )
+    {
+        Channel* channel = it->second;
+        if (channel->findUser(client)){
+            channel->broadcast(message, client);
+            channel->removeUser(client);
+            if (channel->getUsers().empty())
+            {
+                std::cout << "INFO: Channel " << it->first << " deleted (empty) after QUIT" << std::endl;
+                delete channel;
+                it = channels.erase(it);
+                continue;
+            }
+        }
+        ++it;
+    }
+    clients.erase(it);
+    std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
+
+}
