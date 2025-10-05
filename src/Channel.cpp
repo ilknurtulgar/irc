@@ -6,6 +6,8 @@ Channel::~Channel(){}
 
 void Channel::addUser(Client* client){
     users[client->getFd()] = client;
+     if (users.size() == 1) 
+        operators.insert(client);
 }
 
 void Channel::broadcast(const std::string& msg, Client* client){

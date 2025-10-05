@@ -97,15 +97,19 @@ void Client::handleCommand(std::string &receiveData)
 			handleNames(data);
 		else if (data[0] == "WHO") 
 			handleWho(data);
-		if (data[0] == "PING") 
+		else if (data[0] == "PING") 
 			handlePing(data);
+<<<<<<< Updated upstream
 		if (data[0] == "PART") 
 			handlePart(data);
 		if (data[0] == "QUIT") 
 	 		handleQuit(data);
+=======
+		else if (data[0] == "KICK") 
+			handleKick(data);
+>>>>>>> Stashed changes
     // else if (data[0] == "NOTICE") handleNotice(data);
     // else if (data[0] == "TOPIC") handleTopic(data);
-    // else if (data[0] == "KICK") handleKick(data);
     // else if (data[0] == "MODE") handleMode(data);
     // else if (data[0] == "INVITE") handleInvite(data);
     // else if (data[0] == "LIST") handleList(data);

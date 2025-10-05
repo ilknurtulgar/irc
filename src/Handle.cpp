@@ -349,3 +349,60 @@ void Client::handleWho(std::vector<std::string> data)
     std::string endMsg = ":315 " + nickName + " " + data[1] + " :End of WHO list\r\n";
     send(clientSocketFd, endMsg.c_str(), endMsg.length(), 0);
 }
+
+void Client::handleKick(std::vector<std::string> data){
+    if(data.size() < 3){
+        std::string err = "461 " + nickName + " KICK :Not enough parameters\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+    if(!server->isChannel(data[1])){
+
+        std::string err = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+
+    Channel *channel = server->getChannel(data[1]);
+
+    
+    if(!channel->findUser(this)){
+        std::string err = "442 " + nickName + " " + data[1] + " :You're not on that channel\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+    
+    
+    if(!channel->isOperator(this)){
+    
+        std::string err = "482 " + nickName + " " + data[1] + " :You're not channel operator\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+    Client *userClient = server->getClientNick(data[2]);
+    if(userClient == nullptr)
+    {
+        std::string err = "401 " + nickName + " " + data[2] + " :No such nick\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+    if(!channel->findUser(userClient))
+    {
+        std::string err = "401 " + nickName + " " + data[2] + " :They aren't on that channel\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
+    std::string msg;
+    if(data.size() >= 4){   
+        for (size_t i = 3; i < data.size(); i++){
+            if(i > 3)
+                msg += " ";
+            msg += data[i];
+        }   
+    }else
+        msg = nickName;
+        std::string clientMsg = ":" + nickName + "!" + userName + "@" + hostName + 
+             " KICK " + data[1] + " " + data[2] + " :" + msg + "\r\n";
+        channel->broadcast(clientMsg, nullptr);
+        channel->removeUser(userClient);
+}
