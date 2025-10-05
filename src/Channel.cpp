@@ -6,6 +6,8 @@ Channel::~Channel(){}
 
 void Channel::addUser(Client* client){
     users[client->getFd()] = client;
+     if (users.size() == 1) 
+        operators.insert(client);
 }
 
 void Channel::broadcast(const std::string& msg, Client* client){
@@ -29,9 +31,9 @@ bool Channel::findUser(Client* client) const {
 }
 
 
-// std::string Channel::getChannelName() const {
-//     return channelName;
-// }
+std::string Channel::getChannelName() const {
+    return channelName;
+}
 
 std::string Channel::getNickList()const{
     std::string nick;
@@ -43,10 +45,21 @@ std::string Channel::getNickList()const{
         
 
         if(operators.find(client) != operators.end())
-            nick += "@" + client->getNick();
+            nick += "@" + client->getNickName();
         else
-            nick += client->getNick(); 
+            nick += client->getNickName(); 
     }
     return nick;
 }
 
+bool Channel::isOperator(Client *client) const{
+    return operators.find(client) != operators.end(); 
+}
+
+std::string Channel::getTopic()const{
+    return topic;
+}
+
+void Channel::setTopic(std::string &topic){
+    this->topic = topic;
+}
