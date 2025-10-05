@@ -483,8 +483,6 @@ void Client::handleNotice(std::vector<std::string> data)
 
 }
 
-//topic #channel -> kanal konusunu 
-//topic #channel :msgm kanal konusunu güncelleme
 void Client::handleTopic(std::vector<std::string> data){
     if(data.size() < 2){
         std::string errorMsg = "461 " + nickName + " TOPIC :Not enough parameters\r\n";
@@ -526,9 +524,46 @@ void Client::handleTopic(std::vector<std::string> data){
         send(clientSocketFd,msg.c_str(),msg.length(),0);
 
 }
+
+//mode  hata
+//mode #c //cb hata
+//mode #chan -flag
+void Client::handleMode(std::vector<std::string> data){
+    if(data.size() < 3){
+          std::string errorMsg = "461 " + nickName + " MODE :Not enough parameters\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    if(!server->isChannel(data[1])){
+         std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    Channel *channel = server->getChannel(data[1]);
+
+    if(!channel->isOperator(this)){
+        std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
+    if(data[2] == "+i"){
+
+    }else if(data[2] == "-i"){
+
+    }
+
+
+
+    //mode #channel +i
+    //mode #channel -i
+    //l,o,k
+    //- 
+
+
+} 
+
 //list : tüm kanalları, konuları, user sayısını verir
 //list #kanal o kanaldaki kullanıcı sayısı ve topiz veriri
-
 
 void Client::handleList(std::vector<std::string> data) {
     std::string message = ":irc.localhost 321 " + nickName + " Channel :Users  Name\r\n";

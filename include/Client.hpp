@@ -61,6 +61,7 @@ class Client
 		void handleTopic(std::vector<std::string> data);
 		void handleInvite(std::vector<std::string> data);
 		void handleNotice(std::vector<std::string> data);
+		void handleMode(std::vector<std::string> data);
 		void handleList(std::vector<std::string> data);
 
 		bool isRegister();

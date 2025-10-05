@@ -109,7 +109,8 @@ void Client::handleCommand(std::string &receiveData)
 			handleTopic(data);
     	else if (data[0] == "NOTICE") 
 			handleNotice(data);
-    // else if (data[0] == "MODE") handleMode(data);
+    	else if (data[0] == "MODE") 
+			handleMode(data);
      	else if (data[0] == "INVITE")
 			handleInvite(data);
    	 	else if (data[0] == "LIST") 
