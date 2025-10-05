@@ -262,3 +262,7 @@ void Server::removeClient(int clientSocketFd, const std::string& message)
     std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
 
 }
+
+std::map<std::string, Channel*>& Server::getChannels() {
+    return channels;
+}

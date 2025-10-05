@@ -58,6 +58,7 @@ class Server
 		void singleNames(Client *client);
 		void removeChannel(const std::string& channelName);
 		void removeClient(int clientSocketFd, const std::string& message);
+		 std::map<std::string, Channel*>& getChannels();
 
 		
 		

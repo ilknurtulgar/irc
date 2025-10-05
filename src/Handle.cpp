@@ -526,3 +526,41 @@ void Client::handleTopic(std::vector<std::string> data){
         send(clientSocketFd,msg.c_str(),msg.length(),0);
 
 }
+//list : tüm kanalları, konuları, user sayısını verir
+//list #kanal o kanaldaki kullanıcı sayısı ve topiz veriri
+
+
+void Client::handleList(std::vector<std::string> data) {
+    std::string message = ":irc.localhost 321 " + nickName + " Channel :Users  Name\r\n";
+    send(clientSocketFd, message.c_str(), message.length(), 0);
+
+    std::map<std::string, Channel*>& allChannels = server->getChannels();
+
+    if (data.size() == 1) {
+        for (std::map<std::string, Channel*>::iterator it = allChannels.begin(); 
+             it != allChannels.end(); ++it) {
+            Channel* channel = it->second;
+            std::string msg = ":irc.localhost 322 " + nickName + " " + channel->getChannelName() +
+                              " " + std::to_string(channel->getUsers().size()) +
+                              " :" + channel->getTopic() + "\r\n";
+            send(clientSocketFd, msg.c_str(), msg.length(), 0);
+        }
+    } 
+    else {
+        std::stringstream commands(data[1]);
+        std::string channelName;
+        while (std::getline(commands, channelName, ',')) {
+            if (allChannels.find(channelName) == allChannels.end())
+                continue;
+            Channel* channel = allChannels[channelName];
+            std::string msg = ":irc.localhost 322 " + nickName + " " + channel->getChannelName() +
+                              " " + std::to_string(channel->getUsers().size()) +
+                              " :" + channel->getTopic() + "\r\n";
+            send(clientSocketFd, msg.c_str(), msg.length(), 0);
+        }
+    }
+
+    std::string msgEnd = ":irc.localhost 323 " + nickName + " :End of /LIST\r\n";
+    send(clientSocketFd, msgEnd.c_str(), msgEnd.length(), 0);
+}
+
