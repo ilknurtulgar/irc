@@ -130,7 +130,7 @@ void Client::handleJoin(std::vector<std::string> data)
     {
         if (channelName.empty() || channelName[0] != '#')
         {
-            std::string errorMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
+            std::string errorMsg = ":403 " + nickName + " " + channelName + " :No such channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             continue;
         }
@@ -144,7 +144,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
 
     if (data.size() < 3)
     {
-        std::string errorMsg = "461: PRIVMSG: Not enough parameters.\r\n";
+        std::string errorMsg = ":461 PRIVMSG: Not enough parameters.\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -231,7 +231,7 @@ void Client::handlePart(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string errorMsg = "461 " + nickName + " PART :Not enough parameters\r\n";
+        std::string errorMsg = ":461 " + nickName + " PART :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -253,14 +253,14 @@ void Client::handlePart(std::vector<std::string> data)
         Channel *channel = server->getChannel(channelName);
         if (!channel)
         {
-            std::string errMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
+            std::string errMsg = ":403 " + nickName + " " + channelName + " :No such channel\r\n";
             send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
             continue;
         }
 
         if (!channel->findUser(this))
         {
-            std::string errMsg = "442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
+            std::string errMsg = ":442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
             send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
             continue;
         }
@@ -314,20 +314,20 @@ void Client::handleWho(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string err = "461 " + nickName + " WHO :Not enough parameters\r\n";
+        std::string err = ":461 " + nickName + " WHO :Not enough parameters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     else if (data.size() > 2)
     {
-        std::string err = "461 " + nickName + " WHO :Too many parameters\r\n";
+        std::string err = ":461 " + nickName + " WHO :Too many parameters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
 
     if (!server->isChannel(data[1]))
     {
-        std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -342,7 +342,7 @@ void Client::handleWho(std::vector<std::string> data)
         std::string flag = "H";
         if (channel->isOperator(member))
             flag += "@";
-        std::string msg = ":irc.localhost 352 " + member->getNickName() + " " + data[1] + " " + member->getUserName() + " " + member->getHostName() + " irc.localhost " + member->getNickName() + " " + flag + " :0 " + member->getRealName() + "\r\n";
+        std::string msg = ":352 " + member->getNickName() + " " + data[1] + " " + member->getUserName() + " " + member->getHostName() + " irc.localhost " + member->getNickName() + " " + flag + " :0 " + member->getRealName() + "\r\n";
         send(clientSocketFd, msg.c_str(), msg.length(), 0);
     }
 
@@ -353,13 +353,13 @@ void Client::handleWho(std::vector<std::string> data)
 
 void Client::handleKick(std::vector<std::string> data){
     if(data.size() < 3){
-        std::string err = "461 " + nickName + " KICK :Not enough parameters\r\n";
+        std::string err = ":461 " + nickName + " KICK :Not enough parameters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     if(!server->isChannel(data[1])){
 
-        std::string err = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        std::string err = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
@@ -368,7 +368,7 @@ void Client::handleKick(std::vector<std::string> data){
 
     
     if(!channel->findUser(this)){
-        std::string err = "442 " + nickName + " " + data[1] + " :You're not on that channel\r\n";
+        std::string err = ":442 " + nickName + " " + data[1] + " :You're not on that channel\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
@@ -376,20 +376,20 @@ void Client::handleKick(std::vector<std::string> data){
     
     if(!channel->isOperator(this)){
     
-        std::string err = "482 " + nickName + " " + data[1] + " :You're not channel operator\r\n";
+        std::string err = ":482 " + nickName + " " + data[1] + " :You're not channel operator\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     Client *userClient = server->getClientNick(data[2]);
     if(userClient == nullptr)
     {
-        std::string err = "401 " + nickName + " " + data[2] + " :No such nick\r\n";
+        std::string err = ":401 " + nickName + " " + data[2] + " :No such nick\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     if(!channel->findUser(userClient))
     {
-        std::string err = "401 " + nickName + " " + data[2] + " :They aren't on that channel\r\n";
+        std::string err = ":401 " + nickName + " " + data[2] + " :They aren't on that channel\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
@@ -417,7 +417,7 @@ void Client::handleInvite(std::vector<std::string> data)
 {
     if (data.size() < 3)
     {
-        std::string errorMsg = "461 " + nickName + " INVITE :Not enough parameters\r\n";
+        std::string errorMsg = ":461 " + nickName + " INVITE :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -425,22 +425,28 @@ void Client::handleInvite(std::vector<std::string> data)
     std::string channelName = data[2];
     if (!server->isChannel(channelName))
     {
-        std::string errorMsg = "403 " + nickName + " " + channelName + " :No such channel\r\n";
+        std::string errorMsg = ":403 " + nickName + " " + channelName + " :No such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
 
     Channel *channel = server->getChannel(channelName);
+    
+    if (!channel->isOperator(this)) {
+        std::string errorMsg = ":482 " + nickName + " " + channelName + " :You're not channel operator\r\n";
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+}
     if (!channel->findUser(this))
     {
-        std::string errorMsg = "442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
+        std::string errorMsg = ":442 " + nickName + " " + channelName + " :You're not on that channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     Client *inviteClient = server->getClientNick(inviteNick);
     if (!inviteClient)
     {
-        std::string errorMsg = "401 " + nickName + " " + inviteNick + " :No such nick/channel\r\n";
+        std::string errorMsg = ":401 " + nickName + " " + inviteNick + " :No such nick/channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -449,6 +455,7 @@ void Client::handleInvite(std::vector<std::string> data)
 
     std::string message = ":" + nickName + " INVITE " + inviteNick + " :" + channelName + "\r\n";
     send(clientSocketFd, message.c_str(), message.length(), 0);
+    channel->addInvite(inviteClient);
 }
 
 // notice suer :mesaj
@@ -485,13 +492,13 @@ void Client::handleNotice(std::vector<std::string> data)
 
 void Client::handleTopic(std::vector<std::string> data){
     if(data.size() < 2){
-        std::string errorMsg = "461 " + nickName + " TOPIC :Not enough parameters\r\n";
+        std::string errorMsg = ":461 " + nickName + " TOPIC :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     } 
     if(!server->isChannel(data[1])){
 
-        std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -502,9 +509,9 @@ void Client::handleTopic(std::vector<std::string> data){
     if(data.size() == 2){
 
         if(topic.empty())
-            msg = ":irc.localhost 331 " + nickName + " " + data[1] + " :No topic is set\r\n";
+            msg = ":331 " + nickName + " " + data[1] + " :No topic is set\r\n";
         else
-            msg = ":irc.localhost 332 " + nickName + " " + data[1] + " :" + topic + "\r\n";
+            msg = ":332 " + nickName + " " + data[1] + " :" + topic + "\r\n";
             
         send(clientSocketFd,msg.c_str(),msg.length(),0);
         return;
@@ -530,35 +537,33 @@ void Client::handleTopic(std::vector<std::string> data){
 //mode #chan -flag
 void Client::handleMode(std::vector<std::string> data){
     if(data.size() < 3){
-          std::string errorMsg = "461 " + nickName + " MODE :Not enough parameters\r\n";
+          std::string errorMsg = ":461 " + nickName + " MODE :Not enough parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     if(!server->isChannel(data[1])){
-         std::string errorMsg = "403 " + nickName + " " + data[1] + " :No such channel\r\n";
+         std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     Channel *channel = server->getChannel(data[1]);
 
     if(!channel->isOperator(this)){
-        std::string errorMsg = ":403 " + nickName + " " + data[1] + " :No such channel\r\n";
+        std::string errorMsg = ":482 " + nickName + " " + data[1] + " :You're not channel operator\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
-    if(data[2] == "+i"){
-
-    }else if(data[2] == "-i"){
-
+    if(data[2].size() == 2 &&  data[2][1] == 'i'){
+        std::string msg;
+        if(data[2][0] == '+'){
+            channel->setInviteOnly(true);
+            msg = ":" + nickName + "!"+ userName + "@localhost MODE " + data[1] + " +i\r\n";
+        }else if(data[2][0] == '-'){
+            channel->setInviteOnly(false);
+            msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -i\r\n";
+        }
+        channel->broadcast(msg,nullptr);
     }
-
-
-
-    //mode #channel +i
-    //mode #channel -i
-    //l,o,k
-    //- 
-
 
 } 
 
@@ -566,7 +571,7 @@ void Client::handleMode(std::vector<std::string> data){
 //list #kanal o kanaldaki kullanıcı sayısı ve topiz veriri
 
 void Client::handleList(std::vector<std::string> data) {
-    std::string message = ":irc.localhost 321 " + nickName + " Channel :Users  Name\r\n";
+    std::string message = ":321 " + nickName + " Channel :Users  Name\r\n";
     send(clientSocketFd, message.c_str(), message.length(), 0);
 
     std::map<std::string, Channel*>& allChannels = server->getChannels();
@@ -575,7 +580,7 @@ void Client::handleList(std::vector<std::string> data) {
         for (std::map<std::string, Channel*>::iterator it = allChannels.begin(); 
              it != allChannels.end(); ++it) {
             Channel* channel = it->second;
-            std::string msg = ":irc.localhost 322 " + nickName + " " + channel->getChannelName() +
+            std::string msg = ":322 " + nickName + " " + channel->getChannelName() +
                               " " + std::to_string(channel->getUsers().size()) +
                               " :" + channel->getTopic() + "\r\n";
             send(clientSocketFd, msg.c_str(), msg.length(), 0);
@@ -588,14 +593,14 @@ void Client::handleList(std::vector<std::string> data) {
             if (allChannels.find(channelName) == allChannels.end())
                 continue;
             Channel* channel = allChannels[channelName];
-            std::string msg = ":irc.localhost 322 " + nickName + " " + channel->getChannelName() +
+            std::string msg = ":322 " + nickName + " " + channel->getChannelName() +
                               " " + std::to_string(channel->getUsers().size()) +
                               " :" + channel->getTopic() + "\r\n";
             send(clientSocketFd, msg.c_str(), msg.length(), 0);
         }
     }
 
-    std::string msgEnd = ":irc.localhost 323 " + nickName + " :End of /LIST\r\n";
+    std::string msgEnd = ":323 " + nickName + " :End of /LIST\r\n";
     send(clientSocketFd, msgEnd.c_str(), msgEnd.length(), 0);
 }
 

@@ -1,6 +1,6 @@
 #include "../include/Channel.hpp"
 
-Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""){} 
+Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false){} 
 
 Channel::~Channel(){}
 
@@ -62,4 +62,24 @@ std::string Channel::getTopic()const{
 
 void Channel::setTopic(std::string &topic){
     this->topic = topic;
+}
+
+bool Channel::isInviteOnly(){
+    return this->inviteOnly;
+}
+
+bool Channel::setInviteOnly(bool inviteOnly){
+   return this->inviteOnly = inviteOnly;
+}
+
+bool Channel::isInvited(Client *client){
+    return (invited.count(client) > 0);
+}
+
+void Channel::removeInvite(Client *client){
+    invited.erase(client);
+}
+
+void Channel::addInvite(Client *client){
+    invited.insert(client);
 }

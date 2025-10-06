@@ -188,8 +188,14 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 		channels[channelName] = channel;
 	}
 
+	if(channel->isInviteOnly()  && !channel->isInvited(client)){
+		std::string errorMsg = "473 " + client->getNickName() + " " + channelName + " :Cannot join channel (+i)\r\n";
+        send(client->getFd(), errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+	}
 	channel->addUser(client);
-	
+	channel->removeInvite(client);
+
 	std::string joinMsg = ":" + client->getNickName() + " JOIN " + channelName + "\r\n";
 	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
 	channel->broadcast(joinMsg, client);

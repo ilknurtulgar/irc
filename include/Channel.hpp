@@ -22,6 +22,8 @@ class Channel
         std::string topic;
         std::map<int, Client*> users;
         std::set<Client*> operators; //@kullanıcı
+        std::set<Client*> invited;
+        bool inviteOnly;
     public:
         Channel(const std::string &channelName);
         ~Channel();
@@ -32,12 +34,17 @@ class Channel
         std::map<int, Client*>& getUsers() { return users; }
         void removeUser(Client* client);
         bool findUser(Client* client) const;
+        bool isOperator(Client *client)const;
+        
         std::string getChannelName() const;
         std::string getNickList()const;
         std::string getTopic()const;
+        bool setInviteOnly(bool inviteOnly);
         void setTopic(std::string &topic);
-        bool isOperator(Client *client)const;
-
+        bool isInviteOnly();
+        bool isInvited(Client *client);
+        void removeInvite(Client *client);
+        void addInvite(Client *client);
 };
 
 #endif
