@@ -1,6 +1,6 @@
 #include "../include/Channel.hpp"
 
-Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false){} 
+Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false), authTopic(false){} 
 
 Channel::~Channel(){}
 
@@ -82,4 +82,12 @@ void Channel::removeInvite(Client *client){
 
 void Channel::addInvite(Client *client){
     invited.insert(client);
+}
+
+void Channel::setAuthTopic(bool authTopic){
+    this->authTopic = authTopic;
+}
+
+bool Channel::isAuthTopic(){
+    return authTopic;
 }

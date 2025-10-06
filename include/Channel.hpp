@@ -24,6 +24,7 @@ class Channel
         std::set<Client*> operators; //@kullanıcı
         std::set<Client*> invited;
         bool inviteOnly;
+        bool authTopic;
     public:
         Channel(const std::string &channelName);
         ~Channel();
@@ -41,6 +42,8 @@ class Channel
         std::string getTopic()const;
         bool setInviteOnly(bool inviteOnly);
         void setTopic(std::string &topic);
+        void setAuthTopic(bool authTopic);
+        bool isAuthTopic();
         bool isInviteOnly();
         bool isInvited(Client *client);
         void removeInvite(Client *client);
