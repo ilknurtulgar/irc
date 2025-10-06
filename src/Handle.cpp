@@ -502,13 +502,20 @@ void Client::handleTopic(std::vector<std::string> data){
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
+
+
     Channel *channel = server->getChannel(data[1]);
     std::string topic = channel->getTopic();
     std::string msg;
 
+    if(!channel->findUser(this)){
+        msg = "442 " + nickName + " " + data[1] + " :You're not on that channel\r\n";
+        send(clientSocketFd, msg.c_str(), msg.length(), 0);
+        return;
+    }
     if(channel->isAuthTopic() && !channel->isOperator(this)) {
-    std::string errorMsg = ":482 " + nickName + " " + channel->getChannelName() + " :You're not channel operator\r\n";
-    send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+    msg = ":482 " + nickName + " " + channel->getChannelName() + " :You're not channel operator\r\n";
+    send(clientSocketFd,msg.c_str(), msg.length(), 0);
     return;
 }
 
@@ -541,7 +548,6 @@ void Client::handleTopic(std::vector<std::string> data){
 //mode  hata
 //mode #c //cb hata
 //mode #chan -flag
-//+t flagini test edin
 void Client::handleMode(std::vector<std::string> data){
     if(data.size() < 3){
           std::string errorMsg = ":461 " + nickName + " MODE :Not enough parameters\r\n";
@@ -570,9 +576,7 @@ void Client::handleMode(std::vector<std::string> data){
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -i\r\n";
         }
         channel->broadcast(msg,nullptr);
-    }
-
-    if(data[2].size() == 2 && data[2][1] == 't'){
+    } else if(data[2].size() == 2 && data[2][1] == 't'){
         std::string msg;
         if(data[2][0] == '+'){
             channel->setAuthTopic(true);
@@ -582,6 +586,10 @@ void Client::handleMode(std::vector<std::string> data){
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -t\r\n";
         }
         channel->broadcast(msg,nullptr);
+    } else {
+        std::string err = ":472 " + nickName + " " + data[2] + " :is unknown mode char to me\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
     }
 
 } 
