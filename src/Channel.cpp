@@ -1,6 +1,6 @@
 #include "../include/Channel.hpp"
 
-Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false), authTopic(false){} 
+Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false), authTopic(false), userLimit(0), openLimit(false){} 
 
 Channel::~Channel(){}
 
@@ -90,4 +90,21 @@ void Channel::setAuthTopic(bool authTopic){
 
 bool Channel::isAuthTopic(){
     return authTopic;
+}
+
+void Channel::setUserLimit(size_t limit) {
+    userLimit = limit;
+    openLimit = true;
+}
+
+void Channel::closeUserLimit() {
+    openLimit = false;
+}
+
+bool Channel::isOpenLimit() const {
+    return openLimit;
+}
+
+size_t Channel::getUserLimit() const {
+    return userLimit;
 }
