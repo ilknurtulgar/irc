@@ -115,6 +115,7 @@ void Client::handlePing(std::vector<std::string> data)
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
 // kanaın limiti dolmuşsa hata, dolmmamıışsa al
+// birden çok kanal adı yazılırsa argüman inceksleri karışacak!!!!!
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -143,6 +144,15 @@ void Client::handleJoin(std::vector<std::string> data)
                 std::string errorMsg = ":471 " + nickName + " " + channelName + " :Channel is full\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
                 continue;
+            }
+            if (channel->hasKey())
+            {
+                if (data.size() < 3 || channel->getKey() != data[2])
+                {
+                    std::string errorMsg = ":475 " + nickName + " " + channelName + " :Cannot join channel (+k)\r\n";
+                    send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+                    continue;
+                }
             }
         }
 
@@ -573,7 +583,9 @@ void Client::handleTopic(std::vector<std::string> data)
 // joini düzenle limite göre
 // MODE #kanal +o userdd
 // msg en başa al her yerde yazma
-//target var mı yok u bak +o için
+// target var mı yok u bak +o için
+
+//+k modu için joini düzenle şifreli kanalsa joinde şifre yazmalı
 
 void Client::handleMode(std::vector<std::string> data)
 {
@@ -680,6 +692,42 @@ void Client::handleMode(std::vector<std::string> data)
             channel->removeOperator(targetClient);
 
         msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " " + data[2] + " " + data[3] + "\r\n";
+        channel->broadcast(msg, nullptr);
+    }
+    else if (data[2].size() == 2 && data[2][1] == 'k')
+    {
+        if (data[2][0] == '+')
+        {
+            if (data.size() < 4)
+            {
+                std::string errorMsg = ":461 " + nickName + " MODE +k :Not enough parameters\r\n";
+                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+                return;
+            }
+
+            if (channel->hasKey())
+            {
+                std::string errorMsg = ":467 " + nickName + " " + data[1] + " :Channel key already set\r\n";
+                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+                return;
+            }
+
+            channel->setKey(data[3]);
+            msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " +k " + data[3] + "\r\n";
+        }
+        else if (data[2][0] == '-')
+        {
+            if (!channel->hasKey())
+            {
+                std::string errorMsg = ":467 " + nickName + " " + data[1] + " :Channel key not set\r\n";
+                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+                return;
+            }
+
+            channel->removeKey();
+            msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -k\r\n";
+        }
+
         channel->broadcast(msg, nullptr);
     }
     else

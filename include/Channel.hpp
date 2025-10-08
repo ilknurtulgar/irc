@@ -27,27 +27,27 @@ private:
     bool authTopic;
     size_t userLimit;
     bool openLimit;
+    std::string key;
+    bool isKey;
 
 public:
     Channel(const std::string &channelName);
     ~Channel();
 
     void addUser(Client *client);
-    void broadcast(const std::string &msg, Client *client);
     bool whereNames(Client *client);
     std::map<int, Client *> &getUsers() { return users; }
     void removeUser(Client *client);
     bool findUser(Client *client) const;
-    bool isOperator(Client *client) const;
 
     std::string getChannelName() const;
     std::string getNickList() const;
     std::string getTopic() const;
-    bool setInviteOnly(bool inviteOnly);
     void setTopic(std::string &topic);
     void setAuthTopic(bool authTopic);
     bool isAuthTopic();
 
+    bool setInviteOnly(bool inviteOnly);
     bool isInviteOnly();
     bool isInvited(Client *client);
     void removeInvite(Client *client);
@@ -58,8 +58,16 @@ public:
     bool isOpenLimit() const;
     size_t getUserLimit() const;
 
+    bool isOperator(Client *client) const;
     void addOperator(Client *client);
     void removeOperator(Client *client);
+
+    void setKey(const std::string& key);
+    void removeKey();
+    bool hasKey() const;
+    const std::string& getKey() const;
+
+    void broadcast(const std::string &msg, Client *client);
 };
 
 #endif
