@@ -47,14 +47,19 @@ public:
     void setTopic(std::string &topic);
     void setAuthTopic(bool authTopic);
     bool isAuthTopic();
+
     bool isInviteOnly();
     bool isInvited(Client *client);
     void removeInvite(Client *client);
     void addInvite(Client *client);
+
     void setUserLimit(size_t limit);
     void closeUserLimit();
     bool isOpenLimit() const;
     size_t getUserLimit() const;
+
+    void addOperator(Client *client);
+    void removeOperator(Client *client);
 };
 
 #endif
