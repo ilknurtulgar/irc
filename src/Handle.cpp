@@ -114,7 +114,7 @@ void Client::handlePing(std::vector<std::string> data)
 
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
-//kanaın limiti dolmuşsa hata, dolmmamıışsa al
+// kanaın limiti dolmuşsa hata, dolmmamıışsa al
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -137,7 +137,7 @@ void Client::handleJoin(std::vector<std::string> data)
         Channel *channel = server->getChannel(channelName);
         if (channel != nullptr)
         {
-            
+
             if (channel->isOpenLimit() && channel->getUsers().size() >= channel->getUserLimit())
             {
                 std::string errorMsg = ":471 " + nickName + " " + channelName + " :Channel is full\r\n";
@@ -569,8 +569,16 @@ void Client::handleTopic(std::vector<std::string> data)
 // mode  hata
 // mode #c //cb hata
 // mode #chan -flag
+
+// joini düzenle limite göre
+// MODE #kanal +o userdd
+// msg en başa al her yerde yazma
+//target var mı yok u bak +o için
+
 void Client::handleMode(std::vector<std::string> data)
 {
+    std::string msg;
+
     if (data.size() < 3)
     {
         std::string errorMsg = ":461 " + nickName + " MODE :Not enough parameters\r\n";
@@ -593,7 +601,6 @@ void Client::handleMode(std::vector<std::string> data)
     }
     if (data[2].size() == 2 && data[2][1] == 'i')
     {
-        std::string msg;
         if (data[2][0] == '+')
         {
             channel->setInviteOnly(true);
@@ -608,7 +615,6 @@ void Client::handleMode(std::vector<std::string> data)
     }
     else if (data[2].size() == 2 && data[2][1] == 't')
     {
-        std::string msg;
         if (data[2][0] == '+')
         {
             channel->setAuthTopic(true);
@@ -623,10 +629,8 @@ void Client::handleMode(std::vector<std::string> data)
     }
     else if (data[2].size() == 2 && data[2][1] == 'l')
     {
-        std::string msg;
         if (data[2][0] == '+')
         {
-            // +l için parametre (limit sayısı) verilmiş olmalı
             if (data.size() < 4)
             {
                 std::string errorMsg = ":461 " + nickName + " MODE +l :Not enough parameters\r\n";
@@ -650,6 +654,32 @@ void Client::handleMode(std::vector<std::string> data)
             channel->closeUserLimit();
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -l\r\n";
         }
+
+        channel->broadcast(msg, nullptr);
+    }
+    else if (data[2].size() == 2 && data[2][1] == 'o')
+    {
+        if (data.size() < 4)
+        {
+            std::string errorMsg = ":461 " + nickName + " MODE :Not enough parameters\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            return;
+        }
+
+        Client *targetClient = server->getClientNick(data[3]);
+        if (!targetClient)
+        {
+            std::string errorMsg = ":401 " + nickName + " " + data[3] + " :No such nick/channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            return;
+        }
+
+        if (data[2][0] == '+')
+            channel->addOperator(targetClient);
+        else
+            channel->removeOperator(targetClient);
+
+        msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " " + data[2] + " " + data[3] + "\r\n";
         channel->broadcast(msg, nullptr);
     }
     else
