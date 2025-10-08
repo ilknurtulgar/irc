@@ -107,15 +107,14 @@ void Client::handleCommand(std::string &receiveData)
 			handleKick(data);
 		else if (data[0] == "TOPIC") 
 			handleTopic(data);
-    // else if (data[0] == "NOTICE") handleNotice(data);
     	else if (data[0] == "NOTICE") 
 			handleNotice(data);
-    // else if (data[0] == "TOPIC") handleTopic(data);
-    // else if (data[0] == "MODE") handleMode(data);
-     	if (data[0] == "INVITE")
+    	else if (data[0] == "MODE") 
+			handleMode(data);
+     	else if (data[0] == "INVITE")
 			handleInvite(data);
-    // else if (data[0] == "LIST") handleList(data);
-    // else if (data[0] == "PART") handlePart(data);
+   	 	else if (data[0] == "LIST") 
+			handleList(data);
 
 	}
 	if (isRegister() && !hasWelcomed)
