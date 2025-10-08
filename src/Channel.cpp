@@ -138,3 +138,19 @@ void Channel::removeOperator(Client *client)
 { 
     operators.erase(client); 
 }
+
+void Channel::setKey(const std::string& k) {
+    key = k;
+}
+
+void Channel::removeKey() {
+    key.clear();
+}
+
+bool Channel::hasKey() const {
+    return !key.empty();
+}
+
+const std::string& Channel::getKey() const {
+    return key;
+}
