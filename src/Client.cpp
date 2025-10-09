@@ -79,8 +79,6 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
-	else if (data[0] == "PRIVMSG") 
-		handlePrivMsg(data);
 	
 	else
 	{
@@ -90,24 +88,35 @@ void Client::handleCommand(std::string &receiveData)
 			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
-		}
+		}	
+		if (data[0] == "JOIN") 	
+			handleJoin(data);
+		else if (data[0] == "PRIVMSG") 
+			handlePrivMsg(data);
+		else if (data[0] == "NAMES") 
+			handleNames(data);
+		else if (data[0] == "WHO") 
+			handleWho(data);
+		else if (data[0] == "PING") 
+			handlePing(data);
+		if (data[0] == "PART") 
+			handlePart(data);
+		if (data[0] == "QUIT") 
+	 		handleQuit(data);
+		else if (data[0] == "KICK") 
+			handleKick(data);
+		else if (data[0] == "TOPIC") 
+			handleTopic(data);
+    	else if (data[0] == "NOTICE") 
+			handleNotice(data);
+    	else if (data[0] == "MODE") 
+			handleMode(data);
+     	else if (data[0] == "INVITE")
+			handleInvite(data);
+   	 	else if (data[0] == "LIST") 
+			handleList(data);
 
-	if (data[0] == "JOIN") 	
-	 	handleJoin(data);
-    // else if (data[0] == "NOTICE") handleNotice(data);
-    // else if (data[0] == "TOPIC") handleTopic(data);
-    // else if (data[0] == "KICK") handleKick(data);
-    // else if (data[0] == "MODE") handleMode(data);
-    // else if (data[0] == "INVITE") handleInvite(data);
-    // else if (data[0] == "WHO") handleWho(data);
-    // else if (data[0] == "NAMES") handleNames(data);
-    // else if (data[0] == "LIST") handleList(data);
-    // else if (data[0] == "PART") handlePart(data);
-	if (data[0] == "PING") 
-		handlePing(data);
-    // else if (data[0] == "QUIT") handleQuit(data);
 	}
-	
 	if (isRegister() && !hasWelcomed)
 	{
 		std::string msg001 = "001 " + nickName + " :Welcome to the IRC server, " + nickName + "!\r\n";
@@ -128,6 +137,18 @@ int Client::getFd()const{
 	return clientSocketFd;
 }
 
-std::string Client::getNick()const{
+std::string Client::getHostName()const{
+	return hostName;
+}
+
+std::string Client::getNickName()const{
 	return nickName;
+}
+
+std::string Client::getRealName()const{
+	return realName;
+}
+
+std::string Client::getUserName()const{
+	return userName;
 }

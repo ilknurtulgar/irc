@@ -20,10 +20,10 @@ bool Client::isSignedPassword()
 
 bool Client::invalidCommand(const std::string& command){
 	return (command == "PASS" || command == "NICK" || 
-            command == "USER" || command == "JOIN" || command == "PING" ||
+            command == "USER" || command == "JOIN" || command == "PING" || command == "NAMES" || command == "WHO" ||
             command == "PRIVMSG" || command == "KICK" ||
             command == "INVITE" || command == "TOPIC" ||
-            command == "MODE" || command == "QUIT");
+            command == "MODE" || command == "QUIT" || command == "PART" || command == "NOTICE" || command == "LIST");
 	
 }
 
