@@ -28,7 +28,6 @@ private:
     size_t userLimit;
     bool openLimit;
     std::string key;
-    bool isKey;
 
 public:
     Channel(const std::string &channelName);
