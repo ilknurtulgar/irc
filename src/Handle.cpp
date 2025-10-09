@@ -116,6 +116,7 @@ void Client::handlePing(std::vector<std::string> data)
 }
 // kanaın limiti dolmuşsa hata, dolmmamıışsa al
 // birden çok kanal adı yazılırsa argüman inceksleri karışacak!!!!!
+// +k için fonksiyonu güncelledim
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -125,9 +126,15 @@ void Client::handleJoin(std::vector<std::string> data)
         return;
     }
 
-    std::stringstream commands(data[1]);
+    std::stringstream channelsStream(data[1]);
+    std::stringstream keysStream;
+    if (data.size() >= 3)
+        keysStream.str(data[2]);
+
     std::string channelName;
-    while (std::getline(commands, channelName, ','))
+    std::string key;
+
+    while (std::getline(channelsStream, channelName, ','))
     {
         if (channelName.empty() || channelName[0] != '#')
         {
@@ -135,30 +142,26 @@ void Client::handleJoin(std::vector<std::string> data)
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             continue;
         }
-        Channel *channel = server->getChannel(channelName);
-        if (channel != nullptr)
-        {
 
-            if (channel->isOpenLimit() && channel->getUsers().size() >= channel->getUserLimit())
+        Channel *channel = server->getChannel(channelName);
+
+        if (data.size() >= 3)
+            std::getline(keysStream, key, ',');
+        else
+            key.clear();
+        if (channel && channel->hasKey())
+        {
+            if (key.empty() || channel->getKey() != key)
             {
-                std::string errorMsg = ":471 " + nickName + " " + channelName + " :Channel is full\r\n";
+                std::string errorMsg = ":475 " + nickName + " " + channelName + " :Cannot join channel (+k)\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
                 continue;
             }
-            if (channel->hasKey())
-            {
-                if (data.size() < 3 || channel->getKey() != data[2])
-                {
-                    std::string errorMsg = ":475 " + nickName + " " + channelName + " :Cannot join channel (+k)\r\n";
-                    send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-                    continue;
-                }
-            }
         }
-
         server->checkChannel(this, channelName);
     }
 }
+
 
 void Client::handlePrivMsg(std::vector<std::string> data)
 {
