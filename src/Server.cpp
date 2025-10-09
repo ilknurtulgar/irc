@@ -5,11 +5,10 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/09 15:06:31 by itulgar          ###   ########.fr       */
+/*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
+/*   Updated: 2025/10/09 17:30:03 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
@@ -30,11 +29,12 @@ Server::~Server()
 void Server::run()
 {
 	setupServer();
-	 while(1)
+	 while(g_run)
 	 {
 		setPoll();
 	}
-
+	std::cout << "durdum" << std::endl;
+	exit(0);
 }
 
 void Server::setupServer()
@@ -91,7 +91,7 @@ void Server::setPoll()
 	}
 
 	int ret = poll(fds, nfds, -1);
-	if(ret < 0) {
+	if(ret < 0 && g_run) {
 		perror("Poll failed");
         exit(EXIT_FAILURE);
 	}
