@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:11:31 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/09 15:06:31 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ bool Server::isChannel(const std::string &name){
 }
 
 void Server::checkChannel(Client *client,const std::string& channelName){
-	Channel *channel = nullptr;
+	Channel *channel = NULL;
 
 	if(isChannel(channelName))
 		channel = channels[channelName];
@@ -207,7 +207,7 @@ Client* Server::getClientNick(std::string& nick){
 		if(it->second->getNickName() == nick)
 			return it->second;
 	}
-	return nullptr;
+	return NULL;
 }
 
 Channel* Server::getChannel(std::string& channel){
@@ -215,7 +215,7 @@ Channel* Server::getChannel(std::string& channel){
 	std::map<std::string, Channel*>::iterator it = channels.find(channel);
 	if(it != channels.end())
 		return it->second;
-	return nullptr;
+	return NULL;
 	
 }
 
@@ -258,7 +258,8 @@ void Server::removeClient(int clientSocketFd, const std::string& message)
             {
                 std::cout << "INFO: Channel " << it->first << " deleted (empty) after QUIT" << std::endl;
                 delete channel;
-                it = channels.erase(it);
+                std::map<std::string, Channel*>::iterator toErase = it++;
+				channels.erase(toErase);
                 continue;
             }
         }

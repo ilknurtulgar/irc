@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:14:24 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/09 16:06:30 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,7 @@ int main(int argc, char** argv){
 			return 0;
 		}
 		Server server(port,password);
-
 		server.run();
-		
 	}
-
 }
 
