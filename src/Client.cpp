@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 20:43:13 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/09 15:10:25 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
 	realName = "";
 	signPass = false;
 	hasWelcomed = false;
+	for (size_t i = 0; i < 3; i++)
+		isRegistered[i] = 0;
+
+	
 }
 
 Client::~Client()

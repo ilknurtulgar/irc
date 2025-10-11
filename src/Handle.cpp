@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Handle.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 20:36:31 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/09 14:53:02 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
         Client *nickClinet = server->getClientNick(data[1]);
         std::cout << nickClinet << std::endl;
 
-        if (nickClinet == nullptr)
+        if (nickClinet == NULL)
         {
             std::string errorMsg = ":401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
@@ -407,7 +407,7 @@ void Client::handleKick(std::vector<std::string> data)
         return;
     }
     Client *userClient = server->getClientNick(data[2]);
-    if (userClient == nullptr)
+    if (userClient == NULL)
     {
         std::string err = ":401 " + nickName + " " + data[2] + " :No such nick\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
@@ -433,7 +433,7 @@ void Client::handleKick(std::vector<std::string> data)
         msg = nickName;
     std::string clientMsg = ":" + nickName + "!" + userName + "@" + hostName +
                             " KICK " + data[1] + " " + data[2] + " :" + msg + "\r\n";
-    channel->broadcast(clientMsg, nullptr);
+    channel->broadcast(clientMsg, NULL);
     channel->removeUser(userClient);
 }
 
@@ -626,7 +626,7 @@ void Client::handleMode(std::vector<std::string> data)
             channel->setInviteOnly(false);
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -i\r\n";
         }
-        channel->broadcast(msg, nullptr);
+        channel->broadcast(msg, NULL);
     }
     else if (data[2].size() == 2 && data[2][1] == 't')
     {
@@ -640,7 +640,7 @@ void Client::handleMode(std::vector<std::string> data)
             channel->setAuthTopic(false);
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -t\r\n";
         }
-        channel->broadcast(msg, nullptr);
+        channel->broadcast(msg, NULL);
     }
     else if (data[2].size() == 2 && data[2][1] == 'l')
     {
@@ -670,7 +670,7 @@ void Client::handleMode(std::vector<std::string> data)
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -l\r\n";
         }
 
-        channel->broadcast(msg, nullptr);
+        channel->broadcast(msg, NULL);
     }
     else if (data[2].size() == 2 && data[2][1] == 'o')
     {
@@ -695,7 +695,7 @@ void Client::handleMode(std::vector<std::string> data)
             channel->removeOperator(targetClient);
 
         msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " " + data[2] + " " + data[3] + "\r\n";
-        channel->broadcast(msg, nullptr);
+        channel->broadcast(msg, NULL);
     }
     else if (data[2].size() == 2 && data[2][1] == 'k')
     {
@@ -731,7 +731,7 @@ void Client::handleMode(std::vector<std::string> data)
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -k\r\n";
         }
 
-        channel->broadcast(msg, nullptr);
+        channel->broadcast(msg, NULL);
     }
     else
     {
@@ -757,8 +757,11 @@ void Client::handleList(std::vector<std::string> data)
              it != allChannels.end(); ++it)
         {
             Channel *channel = it->second;
+			std::ostringstream oss; 
+			oss << channel->getUsers().size();
+			std::string countUser = oss.str();
             std::string msg = ":322 " + nickName + " " + channel->getChannelName() +
-                              " " + std::to_string(channel->getUsers().size()) +
+                              " " + countUser +
                               " :" + channel->getTopic() + "\r\n";
             send(clientSocketFd, msg.c_str(), msg.length(), 0);
         }
@@ -772,8 +775,11 @@ void Client::handleList(std::vector<std::string> data)
             if (allChannels.find(channelName) == allChannels.end())
                 continue;
             Channel *channel = allChannels[channelName];
+				std::ostringstream oss; 
+			oss << channel->getUsers().size();
+			std::string countUser = oss.str();
             std::string msg = ":322 " + nickName + " " + channel->getChannelName() +
-                              " " + std::to_string(channel->getUsers().size()) +
+                              " " + countUser +
                               " :" + channel->getTopic() + "\r\n";
             send(clientSocketFd, msg.c_str(), msg.length(), 0);
         }

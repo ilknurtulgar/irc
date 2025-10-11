@@ -6,15 +6,24 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:14:24 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/09 17:13:58 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./include/Server.hpp"
 #include "./include/Client.hpp"
 
+volatile sig_atomic_t g_run = 1;
+
+void signal_handler(int signum){
+	std::cout << "Interrupt signal (" << signum << ") received.\n";
+	g_run = 0;
+}
 
 int main(int argc, char** argv){
+	
+	std::signal(SIGINT,signal_handler);
+	std::signal(SIGTERM,signal_handler);
 	
 	if(argc != 3){
 	 	std::cout << "ERROR: Invalid argument honey" << std::endl;
@@ -44,10 +53,7 @@ int main(int argc, char** argv){
 			return 0;
 		}
 		Server server(port,password);
-
 		server.run();
-		
 	}
-
 }
 
