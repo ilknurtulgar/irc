@@ -5,11 +5,10 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/23 20:13:56 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 15:11:31 by itulgar          ###   ########.fr       */
+/*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
+/*   Updated: 2025/10/09 17:30:03 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../include/Server.hpp"
 #include "../include/Client.hpp"
@@ -30,11 +29,12 @@ Server::~Server()
 void Server::run()
 {
 	setupServer();
-	 while(1)
+	 while(g_run)
 	 {
 		setPoll();
 	}
-
+	std::cout << "durdum" << std::endl;
+	exit(0);
 }
 
 void Server::setupServer()
@@ -91,7 +91,7 @@ void Server::setPoll()
 	}
 
 	int ret = poll(fds, nfds, -1);
-	if(ret < 0) {
+	if(ret < 0 && g_run) {
 		perror("Poll failed");
         exit(EXIT_FAILURE);
 	}
@@ -179,7 +179,7 @@ bool Server::isChannel(const std::string &name){
 }
 
 void Server::checkChannel(Client *client,const std::string& channelName){
-	Channel *channel = nullptr;
+	Channel *channel = NULL;
 
 	if(isChannel(channelName))
 		channel = channels[channelName];
@@ -188,9 +188,88 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 		channels[channelName] = channel;
 	}
 
+	if(channel->isInviteOnly()  && !channel->isInvited(client)){
+		std::string errorMsg = "473 " + client->getNickName() + " " + channelName + " :Cannot join channel (+i)\r\n";
+        send(client->getFd(), errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+	}
 	channel->addUser(client);
-	
-	std::string joinMsg = ":" + client->getNick() + " JOIN " + channelName + "\r\n";
+	channel->removeInvite(client);
+
+	std::string joinMsg = ":" + client->getNickName() + " JOIN " + channelName + "\r\n";
 	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
 	channel->broadcast(joinMsg, client);
+}
+
+Client* Server::getClientNick(std::string& nick){
+
+    for (std::map<int,Client*>::iterator it = clients.begin(); it != clients.end(); ++it){
+		if(it->second->getNickName() == nick)
+			return it->second;
+	}
+	return NULL;
+}
+
+Channel* Server::getChannel(std::string& channel){
+
+	std::map<std::string, Channel*>::iterator it = channels.find(channel);
+	if(it != channels.end())
+		return it->second;
+	return NULL;
+	
+}
+
+void Server::singleNames(Client *client){
+	for(std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it){
+		if(it->second->whereNames(client)){
+			
+		std::string msg = ":353 " +client->getNickName() + " = " 
+                        + it->first + " :" + it->second->getNickList() + "\r\n";
+        send(client->getFd(), msg.c_str(), msg.length(), 0);
+
+        std::string endMsg = ":366 " + client->getNickName() + " " 
+                           + it->first + " :End of /NAMES list\r\n";
+        send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
+		}
+	}
+}
+
+void Server::removeChannel(const std::string& channelName) {
+    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    if (it != channels.end()) {
+        delete it->second;
+        channels.erase(it);
+    }
+}
+
+void Server::removeClient(int clientSocketFd, const std::string& message)
+{
+    std::map<int, Client*>::iterator it = clients.find(clientSocketFd);
+    if (it == clients.end())
+        return;
+    Client* client = it->second;
+    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); )
+    {
+        Channel* channel = it->second;
+        if (channel->findUser(client)){
+            channel->broadcast(message, client);
+            channel->removeUser(client);
+            if (channel->getUsers().empty())
+            {
+                std::cout << "INFO: Channel " << it->first << " deleted (empty) after QUIT" << std::endl;
+                delete channel;
+                std::map<std::string, Channel*>::iterator toErase = it++;
+				channels.erase(toErase);
+                continue;
+            }
+        }
+        ++it;
+    }
+    clients.erase(it);
+    std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
+
+}
+
+std::map<std::string, Channel*>& Server::getChannels() {
+    return channels;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 20:43:13 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/09 15:10:25 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
 	realName = "";
 	signPass = false;
 	hasWelcomed = false;
+	for (size_t i = 0; i < 3; i++)
+		isRegistered[i] = 0;
+
+	
 }
 
 Client::~Client()
@@ -79,8 +83,6 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
-	else if (data[0] == "PRIVMSG") 
-		handlePrivMsg(data);
 	
 	else
 	{
@@ -90,24 +92,35 @@ void Client::handleCommand(std::string &receiveData)
 			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
-		}
+		}	
+		if (data[0] == "JOIN") 	
+			handleJoin(data);
+		else if (data[0] == "PRIVMSG") 
+			handlePrivMsg(data);
+		else if (data[0] == "NAMES") 
+			handleNames(data);
+		else if (data[0] == "WHO") 
+			handleWho(data);
+		else if (data[0] == "PING") 
+			handlePing(data);
+		if (data[0] == "PART") 
+			handlePart(data);
+		if (data[0] == "QUIT") 
+	 		handleQuit(data);
+		else if (data[0] == "KICK") 
+			handleKick(data);
+		else if (data[0] == "TOPIC") 
+			handleTopic(data);
+    	else if (data[0] == "NOTICE") 
+			handleNotice(data);
+    	else if (data[0] == "MODE") 
+			handleMode(data);
+     	else if (data[0] == "INVITE")
+			handleInvite(data);
+   	 	else if (data[0] == "LIST") 
+			handleList(data);
 
-	if (data[0] == "JOIN") 	
-	 	handleJoin(data);
-    // else if (data[0] == "NOTICE") handleNotice(data);
-    // else if (data[0] == "TOPIC") handleTopic(data);
-    // else if (data[0] == "KICK") handleKick(data);
-    // else if (data[0] == "MODE") handleMode(data);
-    // else if (data[0] == "INVITE") handleInvite(data);
-    // else if (data[0] == "WHO") handleWho(data);
-    // else if (data[0] == "NAMES") handleNames(data);
-    // else if (data[0] == "LIST") handleList(data);
-    // else if (data[0] == "PART") handlePart(data);
-	if (data[0] == "PING") 
-		handlePing(data);
-    // else if (data[0] == "QUIT") handleQuit(data);
 	}
-	
 	if (isRegister() && !hasWelcomed)
 	{
 		std::string msg001 = "001 " + nickName + " :Welcome to the IRC server, " + nickName + "!\r\n";
@@ -128,6 +141,18 @@ int Client::getFd()const{
 	return clientSocketFd;
 }
 
-std::string Client::getNick()const{
+std::string Client::getHostName()const{
+	return hostName;
+}
+
+std::string Client::getNickName()const{
 	return nickName;
+}
+
+std::string Client::getRealName()const{
+	return realName;
+}
+
+std::string Client::getUserName()const{
+	return userName;
 }
