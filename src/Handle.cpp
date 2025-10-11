@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/09 14:53:02 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/11 14:25:11 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,7 +329,9 @@ void Client::handleQuit(std::vector<std::string> data)
     if (!message.empty())
         errMsg += " :" + message;
     errMsg += "\r\n";
+	std::string closeMsg = "ERROR :Closing Link: " + nickName + " (irc.localhost) [Client Quit]\r\n";
     send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
+	send(clientSocketFd, closeMsg.c_str(), closeMsg.length(), 0);
     server->removeClient(clientSocketFd, errMsg);
     close(clientSocketFd);
 }

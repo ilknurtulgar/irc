@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/09 17:30:03 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/11 19:35:16 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,12 @@ Server::~Server()
 	clients.clear();
 	if (serverSocketFd >= 0)
 		close(serverSocketFd);
+
+	for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it)
+    	delete it->second;
+
+	channels.clear();
+
 }
 
 
@@ -33,8 +39,7 @@ void Server::run()
 	 {
 		setPoll();
 	}
-	std::cout << "durdum" << std::endl;
-	exit(0);
+	return;
 }
 
 void Server::setupServer()
@@ -75,6 +80,7 @@ void Server::setupServer()
 void Server::setPoll()
 {
 	struct pollfd fds[MAX_CLIENTS];
+	memset(fds,0,sizeof(fds));
 	int nfds = 0;
 	fds[nfds].fd =serverSocketFd;
 	fds[nfds].events = POLLIN;
@@ -123,9 +129,8 @@ void Server::acceptNewClient()
 	if(flag < 0)
 	{
 		perror("fcntl F_getfl");
-		
 		exit(EXIT_FAILURE);
-	}
+	}	
 	flag |= O_NONBLOCK;
 	if(fcntl(newClientSocketFd, F_SETFL, flag) < 0)
 	{
@@ -153,6 +158,8 @@ void Server::recvClientData(int clientSocketFd)
 	else if (byteRead == 0)
 	{
 		std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
+
+		close(clientSocketFd);
 		return;
 	}
 
@@ -265,9 +272,8 @@ void Server::removeClient(int clientSocketFd, const std::string& message)
         }
         ++it;
     }
-    clients.erase(it);
     std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
-
+	
 }
 
 std::map<std::string, Channel*>& Server::getChannels() {
