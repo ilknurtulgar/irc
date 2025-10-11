@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/11 19:35:16 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/11 21:22:05 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void Server::acceptNewClient()
 void Server::recvClientData(int clientSocketFd)
 {
 	char buffer[BUFFER_SIZE];
-	size_t byteRead = recv(clientSocketFd, buffer, BUFFER_SIZE - 1, 0);
+	ssize_t byteRead = recv(clientSocketFd, buffer, BUFFER_SIZE - 1, 0);
 	if(byteRead < 0)
 	{
 		perror("recv failed");
@@ -196,7 +196,7 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 	}
 
 	if(channel->isInviteOnly()  && !channel->isInvited(client)){
-		std::string errorMsg = "473 " + client->getNickName() + " " + channelName + " :Cannot join channel (+i)\r\n";
+		std::string errorMsg = ":server 473 " + channelName + " :Cannot join channel (+i)\r\n";
         send(client->getFd(), errorMsg.c_str(), errorMsg.length(), 0);
         return;
 	}
@@ -234,7 +234,7 @@ void Server::singleNames(Client *client){
                         + it->first + " :" + it->second->getNickList() + "\r\n";
         send(client->getFd(), msg.c_str(), msg.length(), 0);
 
-        std::string endMsg = ":366 " + client->getNickName() + " " 
+        std::string endMsg = ":localhost 366  " + client->getNickName() + " " 
                            + it->first + " :End of /NAMES list\r\n";
         send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
 		}
