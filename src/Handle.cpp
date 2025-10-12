@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/11 21:22:22 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 13:44:18 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -356,7 +356,6 @@ void Client::handleQuit(std::vector<std::string> data)
     server->removeClient(clientSocketFd, errMsg);
     close(clientSocketFd);
 }
-
 void Client::handleWho(std::vector<std::string> data)
 {
     if (data.size() < 2)

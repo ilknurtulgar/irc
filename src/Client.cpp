@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/11 19:30:32 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 13:49:32 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,9 @@ void Client::handleCommand(std::string &receiveData)
 		handleUser(data);
 	else if (data[0] == "NICK")
 		handleNick(data);
-	
+		
+	if (data[0] == "QUIT") 
+		handleQuit(data);
 	else
 	{
 		if(!isRegister())
@@ -104,8 +106,6 @@ void Client::handleCommand(std::string &receiveData)
 			handlePing(data);
 		if (data[0] == "PART") 
 			handlePart(data);
-		if (data[0] == "QUIT") 
-	 		handleQuit(data);
 		else if (data[0] == "KICK") 
 			handleKick(data);
 		else if (data[0] == "TOPIC") 
