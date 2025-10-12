@@ -56,6 +56,7 @@ public:
     void closeUserLimit();
     bool isOpenLimit() const;
     size_t getUserLimit() const;
+    size_t getUserCount() const;
 
     bool isOperator(Client *client) const;
     void addOperator(Client *client);

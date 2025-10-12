@@ -211,7 +211,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
         }
 
         Channel *channel = server->getChannel(data[1]);
-        std::string broadcastMsg = ":" +   +nickName + "!~" + getUserName + "@localhost PRIVMSG " + data[1] + " :" + msg + "\r\n";        
+    std::string broadcastMsg = ":" + nickName + "!~" + getUserName() + "@localhost PRIVMSG " + data[1] + " :" + msg + "\r\n";        
         channel->broadcast(broadcastMsg, this); 
         return;
     }

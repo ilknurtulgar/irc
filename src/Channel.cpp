@@ -130,6 +130,11 @@ size_t Channel::getUserLimit() const
     return userLimit;
 }
 
+size_t Channel::getUserCount() const
+{
+    return users.size();
+}
+
 void Channel::addOperator(Client *client) 
 { 
     operators.insert(client);
