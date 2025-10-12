@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 19:25:26 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 19:37:26 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,20 +157,27 @@ void Server::recvClientData(int clientSocketFd)
 	}
 	else if (byteRead == 0)
 	{
-		    std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
-        
-    std::map<int, Client*>::iterator it = clients.find(clientSocketFd);
+		std::cout << "Client disconnect: " << clientSocketFd << std::endl;
 
-    if (it != clients.end())
-    {
-        Client* clientToDestroy = it->second;
-        delete clientToDestroy; 
-        clients.erase(it);
-    }
-    if (clientSocketFd >= 0)
-        close(clientSocketFd);
-        
-    return;
+		std::map<int, Client*>::iterator it = clients.find(clientSocketFd);
+
+		if (it != clients.end())
+		{
+			Client* clientToDestroy = it->second;
+			// Build a QUIT message so other users get notified and channel lists are updated
+			std::string host = clientToDestroy->getHostName().empty() ? "localhost" : clientToDestroy->getHostName();
+			std::string quitMsg = ":" + clientToDestroy->getNickName() + "!" + clientToDestroy->getUserName() + "@" + host + " QUIT :Client disconnected\r\n";
+
+			// Remove client from channels (this broadcasts the quit/part as needed)
+			removeClient(clientSocketFd, quitMsg);
+
+			// removeClient will now delete and erase the client from the clients map,
+			// so do not delete/erase here to avoid double-free.
+		}
+		if (clientSocketFd >= 0)
+			close(clientSocketFd);
+
+		return;
 
 	}
 
@@ -306,24 +313,58 @@ void Server::removeClient(int clientSocketFd, const std::string& message)
     if (it == clients.end())
         return;
     Client* client = it->second;
-    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); )
-    {
-        Channel* channel = it->second;
-        if (channel->findUser(client)){
-            channel->broadcast(message, client);
-            channel->removeUser(client);
-            if (channel->getUsers().empty())
-            {
-                std::cout << "INFO: Channel " << it->first << " deleted (empty) after QUIT" << std::endl;
-                delete channel;
-                std::map<std::string, Channel*>::iterator toErase = it++;
+	// For each channel the client is in, send a PART message so clients like KVIrc
+	// update their channel user lists, then remove the user from the channel.
+	for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); )
+	{
+		Channel* channel = it->second;
+		if (channel->findUser(client)){
+			// Build PART message: :nick!user@host PART #channel :reason\r\n
+			std::string host = client->getHostName().empty() ? "localhost" : client->getHostName();
+			// Extract a short reason from the provided message if possible
+			std::string reason = "";
+			std::string msg = message;
+			// message may be like ":nick!user@host QUIT :reason\r\n"
+			size_t pos = msg.find(" QUIT :");
+			if (pos != std::string::npos)
+			{
+				reason = msg.substr(pos + 7);
+				// strip trailing CRLF if present
+				if (!reason.empty() && reason.size() >= 2 && reason.substr(reason.size() - 2) == "\r\n")
+					reason = reason.substr(0, reason.size() - 2);
+			}
+
+			std::string partMsg = ":" + client->getNickName() + "!" + client->getUserName() + "@" + host + " PART " + it->first;
+			if (!reason.empty())
+				partMsg += " :" + reason;
+			partMsg += "\r\n";
+
+			channel->broadcast(partMsg, client);
+			// Also, send PART to the client itself if still connected
+			send(client->getFd(), partMsg.c_str(), partMsg.length(), 0);
+
+			channel->removeUser(client);
+			if (channel->getUsers().empty())
+			{
+				std::cout << "INFO: Channel " << it->first << " deleted (empty) after QUIT" << std::endl;
+				delete channel;
+				std::map<std::string, Channel*>::iterator toErase = it++;
 				channels.erase(toErase);
-                continue;
-            }
-        }
-        ++it;
-    }
-    std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
+				continue;
+			}
+		}
+		++it;
+	}
+
+	// After per-channel PARTs, broadcast a global QUIT to all remaining clients so
+	// they see the user's disconnection as well.
+	for (std::map<int, Client*>::iterator cit = clients.begin(); cit != clients.end(); ++cit)
+	{
+		if (cit->first == clientSocketFd) continue;
+		send(cit->first, message.c_str(), message.length(), 0);
+	}
+
+	std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
 	
 }
 
