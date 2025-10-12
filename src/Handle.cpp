@@ -7,9 +7,13 @@
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /*   Updated: 2025/10/12 14:27:03 by zayaz            ###   ########.fr       */
 =======
 /*   Updated: 2025/10/12 14:49:41 by itulgar          ###   ########.fr       */
+>>>>>>> Stashed changes
+=======
+/*   Updated: 2025/10/12 15:26:12 by zayaz            ###   ########.fr       */
 >>>>>>> Stashed changes
 /*                                                                            */
 /* ************************************************************************** */
@@ -217,7 +221,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
         }
 
         Channel *channel = server->getChannel(data[1]);
-    std::string broadcastMsg = ":" + nickName + "!~" + getUserName() + "@localhost PRIVMSG " + data[1] + " :" + msg + "\r\n";        
+        std::string broadcastMsg = ":" + nickName + "!~" + getUserName() + "@localhost PRIVMSG " + data[1] + " :" + msg + "\r\n";        
         channel->broadcast(broadcastMsg, this); 
         return;
     }
@@ -721,7 +725,12 @@ void Client::handleMode(std::vector<std::string> data)
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
-
+        if (!channel->findUser(targetClient))
+        {
+            std::string errorMsg = ":server 441 " + nickName + " " + data[3] + " " + data[1] + " :They aren't on that channel\r\n";
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            return;
+        }
         if (data[2][0] == '+')
             channel->addOperator(targetClient);
         else

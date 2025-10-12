@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 13:49:46 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 15:24:19 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,11 +142,6 @@ size_t Channel::getUserLimit() const
     return userLimit;
 }
 
-size_t Channel::getUserCount() const
-{
-    return users.size();
-}
-
 void Channel::addOperator(Client *client) 
 { 
     operators.insert(client);
@@ -170,4 +165,9 @@ bool Channel::hasKey() const {
 
 const std::string& Channel::getKey() const {
     return key;
+}
+
+size_t Channel::getUserCount() const
+{
+    return users.size();
 }
