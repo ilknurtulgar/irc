@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 19:37:26 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 19:46:41 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,9 +191,9 @@ void Server::recvClientData(int clientSocketFd)
 		return;
 	}
 	
-	buffer[byteRead] = '\0';
-	std::string receiveData(buffer);
-	clients[clientSocketFd]-> handleCommand(receiveData);
+	// Pass raw bytes to client's incoming handler which will accumulate and
+	// process only complete CRLF/LF terminated lines.
+	clients[clientSocketFd]->handleIncoming(buffer, byteRead);
 }
 
 bool Server::isChannel(const std::string &name){
