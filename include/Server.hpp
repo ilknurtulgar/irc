@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:31 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/09 17:15:37 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/11 19:34:23 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 #define BUFFER_SIZE 1024
 
 extern volatile sig_atomic_t g_run;
-//extern int g_run;
+
 
 class Client;
 class Channel;
