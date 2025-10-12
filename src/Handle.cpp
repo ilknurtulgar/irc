@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 13:44:18 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 14:27:03 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -629,7 +629,12 @@ void Client::handleMode(std::vector<std::string> data)
         return;
     }
     Channel *channel = server->getChannel(data[1]);
-
+    if((data[2][0] != '+' && data[2][0] != '-') || (data[2][1] != 'i' && data[2][1] != 'l' && data[2][1] != 'k'  && data[2][1] != 't' && data[2][1] != 'o'))
+    {
+        std::string err = ":server 472 " + nickName + " " + data[2] + " :is unknown mode char to me\r\n";
+        send(clientSocketFd, err.c_str(), err.size(), 0);
+        return;
+    }
     if (!channel->isOperator(this))
     {
         std::string errorMsg = "::server 482 " + nickName + " " + data[1] + " :You're not channel operator\r\n";
@@ -754,12 +759,6 @@ void Client::handleMode(std::vector<std::string> data)
         }
 
         channel->broadcast(msg, NULL);
-    }
-    else
-    {
-        std::string err = ":472 " + nickName + " " + data[2] + " :is unknown mode char to me\r\n";
-        send(clientSocketFd, err.c_str(), err.size(), 0);
-        return;
     }
 }
 
