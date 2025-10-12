@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Handle.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
+<<<<<<< Updated upstream
 /*   Updated: 2025/10/12 14:27:03 by zayaz            ###   ########.fr       */
+=======
+/*   Updated: 2025/10/12 14:49:41 by itulgar          ###   ########.fr       */
+>>>>>>> Stashed changes
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +203,9 @@ void Client::handlePrivMsg(std::vector<std::string> data)
     for (size_t i = 3; i < data.size(); ++i) {
         msg += " " + data[i]; 
     }
-
+	
+	if(msg.empty() || (msg == ":" && msg.size() == 1))
+		return;
   
     if (data[1][0] == '#')  
     {

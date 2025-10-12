@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 11:42:16 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 13:48:42 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,10 +157,21 @@ void Server::recvClientData(int clientSocketFd)
 	}
 	else if (byteRead == 0)
 	{
-		std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
+		    std::cout << "Client dissconnect: " << clientSocketFd << std::endl;
+        
+    std::map<int, Client*>::iterator it = clients.find(clientSocketFd);
 
-		close(clientSocketFd);
-		return;
+    if (it != clients.end())
+    {
+        Client* clientToDestroy = it->second;
+        delete clientToDestroy; 
+        clients.erase(it);
+    }
+    if (clientSocketFd >= 0)
+        close(clientSocketFd);
+        
+    return;
+
 	}
 
 	if(byteRead > 510){
@@ -175,7 +186,6 @@ void Server::recvClientData(int clientSocketFd)
 	
 	buffer[byteRead] = '\0';
 	std::string receiveData(buffer);
-	
 	clients[clientSocketFd]-> handleCommand(receiveData);
 }
 
