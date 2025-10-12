@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 15:24:19 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 17:57:16 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void Channel::broadcast(const std::string &msg, Client *client)
     for (std::map<int, Client *>::iterator it = users.begin(); it != users.end(); ++it)
     {
         if (it->second != client)
-            send(it->second->getFd(), msg.c_str(), msg.length(), 0);
+            send(it->second->getFd(), msg.c_str(), msg.length(), MSG_NOSIGNAL);
     }
 }
 

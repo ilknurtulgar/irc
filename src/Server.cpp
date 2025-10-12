@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 13:48:42 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/12 19:08:45 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,47 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 	std::string joinMsg = ":" + client->getNickName() + " JOIN " + channelName + "\r\n";
 	send(client->getFd(),joinMsg.c_str(),joinMsg.length(),0);
 	channel->broadcast(joinMsg, client);
+
+	// Send existing users' JOIN and MODE messages to the joining client so clients
+	// that rely on JOIN events (e.g., KVIrc) will populate their user list.
+	std::map<int, Client *> &users = channel->getUsers();
+	for (std::map<int, Client *>::iterator it = users.begin(); it != users.end(); ++it)
+	{
+		Client *other = it->second;
+		if (other == client)
+			continue;
+		std::string otherJoin = ":" + other->getNickName() + "!~" + other->getUserName() + "@localhost JOIN " + channelName + "\r\n";
+		send(client->getFd(), otherJoin.c_str(), otherJoin.length(), 0);
+		if (channel->isOperator(other))
+		{
+			std::string modeMsg = "MODE " + channelName + " +o " + other->getNickName() + "\r\n";
+			send(client->getFd(), modeMsg.c_str(), modeMsg.length(), 0);
+		}
+	}
+
+	// If the joining client is an operator (e.g., they created the channel),
+	// inform them with a MODE +o message so clients like KVIrc display operator status.
+	if (channel->isOperator(client))
+	{
+		std::string selfMode = "MODE " + channelName + " +o " + client->getNickName() + "\r\n";
+		send(client->getFd(), selfMode.c_str(), selfMode.length(), 0);
+	}
+
+	// After that, send the channel topic (if any) and NAMES list to the joining client
+	std::string topic = channel->getTopic();
+	std::string topicMsg;
+	if (topic.empty())
+		topicMsg = ":localhost 331 " + client->getNickName() + " " + channelName + " :No topic is set\r\n";
+	else
+		topicMsg = ":localhost 332 " + client->getNickName() + " " + channelName + " :" + topic + "\r\n";
+	send(client->getFd(), topicMsg.c_str(), topicMsg.length(), 0);
+
+	std::string nickList = channel->getNickList();
+	std::string namesMsg = ":353 " + client->getNickName() + " = " + channelName + " :" + nickList + "\r\n";
+	send(client->getFd(), namesMsg.c_str(), namesMsg.length(), 0);
+
+	std::string endMsg = ":localhost 366 " + client->getNickName() + " " + channelName + " :End of /NAMES list\r\n";
+	send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
 }
 
 Client* Server::getClientNick(std::string& nick){

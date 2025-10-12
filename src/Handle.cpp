@@ -3,22 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Handle.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-/*   Updated: 2025/10/12 14:27:03 by zayaz            ###   ########.fr       */
-=======
-/*   Updated: 2025/10/12 14:49:41 by itulgar          ###   ########.fr       */
->>>>>>> Stashed changes
-=======
-/*   Updated: 2025/10/12 15:26:12 by zayaz            ###   ########.fr       */
->>>>>>> Stashed changes
-=======
-/*   Updated: 2025/10/12 15:03:55 by itulgar          ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
+/*   Updated: 2025/10/12 18:00:54 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +120,23 @@ void Client::handlePing(std::vector<std::string> data)
 
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
+// void Client::handlePing(std::vector<std::string> data)
+// {
+
+//     if (data.size() < 2)
+//     {
+//         std::string errorMsg = ":server 409 " + nickName + " :No origin specified\r\n";
+//         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        
+//         std::cout << "PING: Sent 409 ERR_NOORIGIN to " << nickName << std::endl;
+//         return;
+//     }
+//     std::string token = data[1];
+//     std::string response = "PONG :" + token + "\r\n"; 
+//     send(clientSocketFd, response.c_str(), response.length(), 0);
+//     std::cout << "Sent PONG to " << nickName << ": " << response;
+// }
+
 // kanaın limiti dolmuşsa hata, dolmmamıışsa al
 // birden çok kanal adı yazılırsa argüman inceksleri karışacak!!!!!
 // +k için fonksiyonu güncelledim
@@ -140,7 +145,7 @@ void Client::handleJoin(std::vector<std::string> data)
     if (data.size() < 2)
     {
         std::string errorMsg = ":server 461 * JOIN :Not enough parameters\r\n";
-        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
         return;
     }
 
@@ -157,7 +162,7 @@ void Client::handleJoin(std::vector<std::string> data)
         if (channelName.empty() || channelName[0] != '#')
         {
             std::string errorMsg = ":server 403 " + channelName + " :No such channel\r\n";
-            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
             continue;
         }
 
@@ -167,7 +172,7 @@ void Client::handleJoin(std::vector<std::string> data)
             if (channel->getUserCount() >= channel->getUserLimit()) 
             {
                 std::string errorMsg = ":server 471 " + channelName + " :Cannot join channel (+l)\r\n";
-                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }
         }
@@ -181,7 +186,7 @@ void Client::handleJoin(std::vector<std::string> data)
             if (key.empty() || channel->getKey() != key)
             {
                 std::string errorMsg = ":server 475 " + channelName + " :Cannot join channel (+k)\r\n";
-                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+                send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }
         }
@@ -195,7 +200,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
     if (data.size() < 3)
     {
         std::string errorMsg = ":server 461 PRIVMSG: Not enough parameters.\r\n";
-        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
         return;
     }
 
@@ -203,7 +208,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
     if (data[2][0] != ':')
     {
         std::string errorMsg = ":server 412 " + nickName + ":No text to send\r\n";
-        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
         return;
     }
 
@@ -220,7 +225,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
         if (!server->isChannel(data[1]))  
         {
             std::string errorMsg = ":server 403 " + data[1] + " :No such channel\r\n";
-            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
             return;
         }
 
@@ -236,12 +241,12 @@ void Client::handlePrivMsg(std::vector<std::string> data)
         if (nickClient == NULL)
         {
             std::string errorMsg = ":server 401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
-            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+            send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
             return;
         }
 
         std::string sendMsg = ":server " + nickName + " PRIVMSG " + data[1] + " :" + msg + "\r\n";
-        send(nickClient->getFd(), sendMsg.c_str(), sendMsg.length(), 0);
+        send(nickClient->getFd(), sendMsg.c_str(), sendMsg.length(), MSG_NOSIGNAL);
         return;
     }
 }
@@ -360,11 +365,11 @@ void Client::handleQuit(std::vector<std::string> data)
             message += " " + data[i];
     }
     std::string host = hostName.empty() ? "localhost" : hostName;
-    std::string errMsg = ":" + nickName + "!" + userName + "@" + host + " QUIT";
+    std::string errMsg = nickName + " [" + userName + "@" + host + "] has quit IRC";
     if (!message.empty())
-        errMsg += " :" + message;
+        errMsg += ": " + message;
     errMsg += "\r\n";
-	std::string closeMsg = "ERROR :Closing Link: " + nickName + " (irc.localhost) [Client Quit]\r\n";
+	std::string closeMsg = "Server ERROR::Closing Link: " + nickName + " (irc.localhost) [Client Quit]\r\n";
     send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
 	send(clientSocketFd, closeMsg.c_str(), closeMsg.length(), 0);
     server->removeClient(clientSocketFd, errMsg);
