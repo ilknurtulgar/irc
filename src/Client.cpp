@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 13:49:32 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 14:00:03 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,22 +69,23 @@ void Client::handleCommand(std::string &receiveData)
 		return;
 	}
 
-	if (!isSignedPassword() && data[0] != "PASS")
+	if (!isSignedPassword() && data[0] != "PASS" && data[0] != "QUIT" && data[0] != "PING")
 	{
 		std::string errorMsg = ":server 464 * :Password required\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 		return;
 	}
 
-	if (data[0] == "PASS")
+	if (data[0] == "QUIT") 
+		handleQuit(data);
+	else if (data[0] == "PASS")
 		handlePass(data);
 	else if (data[0] == "USER")
 		handleUser(data);
 	else if (data[0] == "NICK")
-		handleNick(data);
-		
-	if (data[0] == "QUIT") 
-		handleQuit(data);
+		handleNick(data);	
+	else if (data[0] == "PING") 
+			handlePing(data);
 	else
 	{
 		if(!isRegister())
@@ -102,8 +103,6 @@ void Client::handleCommand(std::string &receiveData)
 			handleNames(data);
 		else if (data[0] == "WHO") 
 			handleWho(data);
-		else if (data[0] == "PING") 
-			handlePing(data);
 		if (data[0] == "PART") 
 			handlePart(data);
 		else if (data[0] == "KICK") 
