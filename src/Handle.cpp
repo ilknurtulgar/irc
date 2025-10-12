@@ -8,12 +8,16 @@
 /*   Created: 2025/09/13 12:59:26 by itulgar           #+#    #+#             */
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /*   Updated: 2025/10/12 14:27:03 by zayaz            ###   ########.fr       */
 =======
 /*   Updated: 2025/10/12 14:49:41 by itulgar          ###   ########.fr       */
 >>>>>>> Stashed changes
 =======
 /*   Updated: 2025/10/12 15:26:12 by zayaz            ###   ########.fr       */
+>>>>>>> Stashed changes
+=======
+/*   Updated: 2025/10/12 15:03:55 by itulgar          ###   ########.fr       */
 >>>>>>> Stashed changes
 /*                                                                            */
 /* ************************************************************************** */
