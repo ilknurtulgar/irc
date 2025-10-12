@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 18:00:54 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 19:28:08 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,8 +245,10 @@ void Client::handlePrivMsg(std::vector<std::string> data)
             return;
         }
 
-        std::string sendMsg = ":server " + nickName + " PRIVMSG " + data[1] + " :" + msg + "\r\n";
-        send(nickClient->getFd(), sendMsg.c_str(), sendMsg.length(), MSG_NOSIGNAL);
+    // Properly prefix the message with sender's nick and user/host so clients
+    // like KVIrc display it as a private message from the user.
+    std::string sendMsg = ":" + nickName + "!~" + getUserName() + "@localhost PRIVMSG " + data[1] + " :" + msg + "\r\n";
+    send(nickClient->getFd(), sendMsg.c_str(), sendMsg.length(), MSG_NOSIGNAL);
         return;
     }
 }

@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 17:57:16 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/12 19:13:34 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,12 @@ bool Channel::whereNames(Client *client)
 
 void Channel::removeUser(Client *client)
 {
+    // Remove from user map
     users.erase(client->getFd());
+    // If the user was an operator, remove them from operators set
+    operators.erase(client);
+    // Also remove any outstanding invite for this client
+    invited.erase(client);
 }
 
 bool Channel::findUser(Client *client) const
