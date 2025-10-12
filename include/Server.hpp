@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:31 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/11 19:34:23 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/12 11:42:42 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Server
 		void run();
 		bool isChannel(const std::string& name);
 		void checkChannel(Client* client, const std::string& channelName);
+		bool isNickInUse(const std::string& nick);
 		Client* getClientNick(std::string& nick);
 		Channel* getChannel(std::string& channel);
 		void singleNames(Client *client);
