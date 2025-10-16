@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/16 15:53:03 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/16 16:57:28 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void Client::handleNick(std::vector<std::string> data)
     }
     nickName = data[1];
     std::cout << "Nickname set to: " << nickName << std::endl;
+	std::cout << "***SETLEDİM ***" << std::endl;
     isRegistered[1] = true;
 }
 
@@ -284,7 +285,7 @@ void Client::handleNames(std::vector<std::string> data)
         std::string errorMsg1 = ":353 " + nickName + " = " + channelName + " :" + nickList + "\r\n";
         send(clientSocketFd, errorMsg1.c_str(), errorMsg1.length(), 0);
 
-        std::string errorMsg2 = ":localhost 366 " + nickName + " " + channelName + " :End of /NAMES list\r\n";
+        std::string errorMsg2 = ":localhost 366 " + nickName + " " + channelName + " :End of /NAMES for *\r\n";
         send(clientSocketFd, errorMsg2.c_str(), errorMsg2.length(), 0);
     }
 }

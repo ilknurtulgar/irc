@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/16 15:52:52 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/16 16:01:07 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,11 +294,11 @@ void Server::singleNames(Client *client){
         send(client->getFd(), msg.c_str(), msg.length(), 0);
 
         std::string endMsg = ":localhost 366  " + client->getNickName() + " " 
-                           + it->first + " :End of /NAMES list\r\n";
+                           + it->first + " :End of /NAMES for *\r\n";
         send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
 		}
 	}
-	std::string endMsg = ":localhost 366 " + client->getNickName() + " * :End of /NAMES list\r\n";
+	std::string endMsg =  client->getNickName() + " * :End of /NAMES for *\r\n";
 	send(client->getFd(),endMsg.c_str(),endMsg.length(),0);
 }
 
