@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Handle.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 19:28:08 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/16 15:53:03 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,8 @@ void Client::handleNames(std::vector<std::string> data)
     if (data.size() == 1)
     {
         server->singleNames(this);
+		return;
+		
     }
     else if (data.size() != 2)
     {
@@ -267,7 +269,6 @@ void Client::handleNames(std::vector<std::string> data)
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
-
     std::stringstream commands(data[1]);
     std::string channelName;
     while (std::getline(commands, channelName, ','))

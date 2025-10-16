@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 19:46:41 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/16 15:52:52 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,10 +190,11 @@ void Server::recvClientData(int clientSocketFd)
         clients.erase(clientSocketFd);
 		return;
 	}
+
+	buffer[byteRead] = '\0';
+	std::string receiveData(buffer);
 	
-	// Pass raw bytes to client's incoming handler which will accumulate and
-	// process only complete CRLF/LF terminated lines.
-	clients[clientSocketFd]->handleIncoming(buffer, byteRead);
+	clients[clientSocketFd]-> handleCommand(receiveData);
 }
 
 bool Server::isChannel(const std::string &name){
@@ -285,9 +286,9 @@ Channel* Server::getChannel(std::string& channel){
 }
 
 void Server::singleNames(Client *client){
+	
 	for(std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it){
 		if(it->second->whereNames(client)){
-			
 		std::string msg = ":353 " +client->getNickName() + " = " 
                         + it->first + " :" + it->second->getNickList() + "\r\n";
         send(client->getFd(), msg.c_str(), msg.length(), 0);
@@ -297,6 +298,8 @@ void Server::singleNames(Client *client){
         send(client->getFd(), endMsg.c_str(), endMsg.length(), 0);
 		}
 	}
+	std::string endMsg = ":localhost 366 " + client->getNickName() + " * :End of /NAMES list\r\n";
+	send(client->getFd(),endMsg.c_str(),endMsg.length(),0);
 }
 
 void Server::removeChannel(const std::string& channelName) {

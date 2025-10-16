@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 19:46:40 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/16 15:42:45 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ class Client
 	bool isRegistered[3];
 	bool hasWelcomed;
 
-	// Buffer to accumulate incoming bytes until a full line (CRLF or LF) is received
-	std::string inputBuffer;
+	// // Buffer to accumulate incoming bytes until a full line (CRLF or LF) is received
+	// std::string inputBuffer;
 
 
 	public:
@@ -72,8 +72,8 @@ class Client
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
 
-		// Append raw incoming bytes and process complete lines (CRLF or LF terminated)
-		void handleIncoming(const char* data, ssize_t len);
+		// // Append raw incoming bytes and process complete lines (CRLF or LF terminated)
+		// void handleIncoming(const char* data, ssize_t len);
 		
 		std::string getHostName()const;
 		std::string getNickName()const;
