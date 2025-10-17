@@ -214,7 +214,7 @@ void Server::checkChannel(Client *client,const std::string& channelName){
 	}
 
 	if(channel->isInviteOnly()  && !channel->isInvited(client)){
-		std::string errorMsg = ":server 473 " + channelName + " :Cannot join channel (+i)\r\n";
+		std::string errorMsg = "Cannot join channel (+i): Cannot join channel (+i)\r\n";
         send(client->getFd(), errorMsg.c_str(), errorMsg.length(), 0);
         return;
 	}

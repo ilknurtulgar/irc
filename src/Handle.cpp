@@ -161,7 +161,7 @@ void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string errorMsg = ":server 461 * JOIN :Not enough parameters\r\n";
+        std::string errorMsg = "JOIN requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
         return;
     }
@@ -504,7 +504,7 @@ void Client::handleInvite(std::vector<std::string> data)
 {
     if (data.size() < 3)
     {
-        std::string errorMsg = ":server 461 " + nickName + " INVITE :Not enough parameters\r\n";
+        std::string errorMsg = "INVITE requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -512,7 +512,7 @@ void Client::handleInvite(std::vector<std::string> data)
     std::string channelName = data[2];
     if (!server->isChannel(channelName))
     {
-        std::string errorMsg = ":server 403 " + channelName + " :No such channel\r\n";
+        std::string errorMsg =  "No such channel: no such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -588,14 +588,14 @@ void Client::handleTopic(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string errorMsg = ":server 461 " + nickName + " TOPIC :Not enough parameters\r\n";
+        std::string errorMsg = "TOPIC requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     if (!server->isChannel(data[1]))
     {
 
-        std::string errorMsg = ":server 403 " + data[1] + " :No such channel\r\n";
+        std::string errorMsg = "No such channel : no such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -612,7 +612,7 @@ void Client::handleTopic(std::vector<std::string> data)
     }
     if (channel->isAuthTopic() && !channel->isOperator(this))
     {
-        msg = ":server 482 " + channel->getChannelName() + " :You're not channel operator\r\n";
+        msg =  "You're not channel operator: You're not channel operator\r\n";
         send(clientSocketFd, msg.c_str(), msg.length(), 0);
         return;
     }
