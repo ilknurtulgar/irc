@@ -216,7 +216,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
 {
     if (data.size() < 3)
     {
-        std::string errorMsg = ":server 461 PRIVMSG: Not enough parameters.\r\n";
+        std::string errorMsg = "Not requires more parameters.\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
         return;
     }
@@ -233,7 +233,6 @@ void Client::handlePrivMsg(std::vector<std::string> data)
     for (size_t i = 3; i < data.size(); ++i) {
         msg += " " + data[i]; 
     }
-	
 	if(msg.empty() || (msg == ":" && msg.size() == 1))
 		return;
   
@@ -262,8 +261,6 @@ void Client::handlePrivMsg(std::vector<std::string> data)
             return;
         }
 
-    // Properly prefix the message with sender's nick and user/host so clients
-    // like KVIrc display it as a private message from the user.
     std::string sendMsg = ":" + nickName + "!~" + getUserName() + "@localhost PRIVMSG " + data[1] + " :" + msg + "\r\n";
     send(nickClient->getFd(), sendMsg.c_str(), sendMsg.length(), MSG_NOSIGNAL);
         return;
@@ -315,7 +312,7 @@ void Client::handlePart(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string errorMsg = ":server 461 " + nickName + " PART :Not enough parameters\r\n";
+        std::string errorMsg = "PART requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -439,14 +436,14 @@ void Client::handleKick(std::vector<std::string> data)
 {
     if (data.size() < 3)
     {
-        std::string err = ":server 461 " + nickName + " KICK :Not enough parameters\r\n";
+        std::string err = "KICK requires more parameters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     if (!server->isChannel(data[1]))
     {
 
-        std::string err = ":server 403 " + data[1] + " :No such channel\r\n";
+        std::string err = "No such channel: no such channel\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
@@ -470,7 +467,7 @@ void Client::handleKick(std::vector<std::string> data)
     Client *userClient = server->getClientNick(data[2]);
     if (userClient == NULL)
     {
-        std::string err = ":server 401 " + nickName + " " + data[2] + " :No such nick\r\n";
+        std::string err =  data[2] + ": No such nick\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
