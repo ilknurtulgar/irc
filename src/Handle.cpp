@@ -53,12 +53,9 @@ bool isValidNickname(const std::string &nickName)
 
 void Client::handleNick(std::vector<std::string> data)
 {
-    if (data.size() < 2)
-    {
-        std::string errorMsg = ":server 431 * :No nickname given";
-        send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
+    if (data.size() < 2)  
         return;
-    }
+    
     if (!isValidNickname(data[1]))
     {
         std::string errorMsg = ":server 432 * " + data[1] + " :Erroneous nickname\r\n";
@@ -71,10 +68,30 @@ void Client::handleNick(std::vector<std::string> data)
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
-    nickName = data[1];
+
+    std::string oldNick = nickName;
+    std::string newNick = data[1];
+
+    nickName = newNick;
     std::cout << "Nickname set to: " << nickName << std::endl;
-	std::cout << "***SETLEDİM ***" << std::endl;
     isRegistered[1] = true;
+
+    if (!oldNick.empty() && oldNick != newNick)
+    {
+        std::string host = hostName.empty() ? "localhost" : hostName;
+        std::string nickChangeMsg = ":" + oldNick + "!" + userName + "@" + host + " NICK " + ":" + newNick + "\r\n";
+        
+        std::map<std::string, Channel*>& channels = server->getChannels();
+        for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it)
+        {
+            Channel* ch = it->second;
+            if (ch->findUser(this))
+            {
+                ch->broadcast(nickChangeMsg, this);
+            }
+        }
+        send(clientSocketFd, nickChangeMsg.c_str(), nickChangeMsg.length(), 0);
+    }
 }
 
 void Client::handleUser(std::vector<std::string> data)
@@ -112,10 +129,8 @@ void Client::handlePing(std::vector<std::string> data)
         serverNames = data[1];
     }
     else
-    {
-        std::cout << "PING: Missing parameter." << std::endl;
         return;
-    }
+    
     std::string response = "PONG " + serverNames + " :" + serverNames + "\r\n";
     send(clientSocketFd, response.c_str(), response.length(), 0);
 
