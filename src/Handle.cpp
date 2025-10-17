@@ -292,7 +292,7 @@ void Client::handleNames(std::vector<std::string> data)
     {
         if (channelName.empty() || channelName[0] != '#' || !server->isChannel(channelName))
         {
-            std::string errorMsg = ":server 403 " + channelName + " :No such channel\r\n";
+            std::string errorMsg = "No such channel: no such channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             continue;
         }
