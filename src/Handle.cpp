@@ -90,6 +90,7 @@ void Client::handleNick(std::vector<std::string> data)
                 ch->broadcast(nickChangeMsg, this);
             }
         }
+
         send(clientSocketFd, nickChangeMsg.c_str(), nickChangeMsg.length(), 0);
     }
 }
@@ -398,13 +399,13 @@ void Client::handleWho(std::vector<std::string> data)
 {
     if (data.size() < 2)
     {
-        std::string err = ":server 461 " + nickName + " WHO :Not enough parameters\r\n";
+        std::string err = "WHO requires more paramters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     else if (data.size() > 2)
     {
-        std::string err = ":server 461 " + nickName + " WHO :Too many parameters\r\n";
+        std::string err = "WHO requires more paramters\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
@@ -554,11 +555,18 @@ void Client::handleInvite(std::vector<std::string> data)
 // EKSİK PARAMETRE MESSJI VERMEZ RFC 1459 BUNDAN DOLAYII hata mesajı döndürmez
 void Client::handleNotice(std::vector<std::string> data)
 {
+    //BURASI HATALI 
     if (data.size() < 3)
         return;
 
     std::string user = data[1];
-    std::string message = data[2];
+    std::string message;
+    for (size_t i = 2; i < data.size(); ++i)
+    {
+        message += data[i];
+        if (i + 1 < data.size())
+        message += " ";
+    }
     if (!message.empty() && message[0] == ':')
         message.erase(0, 1);
     if (user[0] == '#')
