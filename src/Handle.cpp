@@ -25,7 +25,7 @@ void Client::handlePass(std::vector<std::string> data)
 
     if (data[1] != serverPass)
     {
-        std::string errorMsg = ":server 464 * :Password incorrect\r\n";
+        std::string errorMsg = "Password incorrect\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -178,7 +178,7 @@ void Client::handleJoin(std::vector<std::string> data)
     {
         if (channelName.empty() || channelName[0] != '#')
         {
-            std::string errorMsg = ":server 403 " + channelName + " :No such channel\r\n";
+            std::string errorMsg = "No such channel: no such channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
             continue;
         }
@@ -188,7 +188,7 @@ void Client::handleJoin(std::vector<std::string> data)
         {
             if (channel->getUserCount() >= channel->getUserLimit()) 
             {
-                std::string errorMsg = ":server 471 " + channelName + " :Cannot join channel (+l)\r\n";
+                std::string errorMsg = "Cannot join channel (+l) :Cannot join channel (+l)\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }
@@ -240,7 +240,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
     {
         if (!server->isChannel(data[1]))  
         {
-            std::string errorMsg = ":server 403 " + data[1] + " :No such channel\r\n";
+            std::string errorMsg = "No such channel: no such channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
             return;
         }
@@ -256,7 +256,7 @@ void Client::handlePrivMsg(std::vector<std::string> data)
 
         if (nickClient == NULL)
         {
-            std::string errorMsg = ":server 401 " + nickName + " " + data[1] + " :No such nick/channel\r\n";
+            std::string errorMsg = data[1] + ": No such nick/channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
             return;
         }
@@ -409,7 +409,7 @@ void Client::handleWho(std::vector<std::string> data)
 
     if (!server->isChannel(data[1]))
     {
-        std::string errorMsg = ":server 403 " + data[1] + " :No such channel\r\n";
+        std::string errorMsg = "No such channel: no such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -657,9 +657,7 @@ void Client::handleMode(std::vector<std::string> data)
 {
     std::string msg;
 
-    char sign = data[2][0];
-    char mode = data[2][1];
-    if (data.size() < 3 || (mode == 'o' && data.size() <= 3))
+    if (data.size() < 3 || ( data.size() <= 3 && data[2][1] == 'o'))
     {
         std::string errorMsg = "MODE requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
@@ -671,6 +669,8 @@ void Client::handleMode(std::vector<std::string> data)
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
+    char sign = data[2][0];
+    char mode = data[2][1];
     Channel *channel = server->getChannel(data[1]);
     if((sign != '+' && sign != '-') ||
         (mode != 'i' && mode != 't' && mode != 'l' && mode != 'k' && mode != 'o'))
@@ -727,7 +727,7 @@ void Client::handleMode(std::vector<std::string> data)
             size_t limit = atoi(data[3].c_str());
             if (limit == 0)
             {
-                std::string errorMsg = ":server 472 " + nickName + " " + data[3] + " :Invalid limit number\r\n";
+                std::string errorMsg = data[3] + " :Invalid limit number\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
                 return;
             }
