@@ -18,7 +18,7 @@ void Client::handlePass(std::vector<std::string> data)
 
     if (data.size() != 2)
     {
-        std::string errorMsg = ":server 461 * PASS ::Not enough parameters\r\n";
+        std::string errorMsg = "PASS requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -99,7 +99,7 @@ void Client::handleUser(std::vector<std::string> data)
 {
     if (data.size() < 5 || data[4].size() < 2 || data[4][0] != ':')
     {
-        std::string errorMsg = ":server 461 * USER :Not enough parameters\r\n";
+        std::string errorMsg = "USER requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -334,7 +334,7 @@ void Client::handlePart(std::vector<std::string> data)
         Channel *channel = server->getChannel(channelName);
         if (!channel)
         {
-            std::string errMsg = ":server 403 " + channelName + " :No such channel\r\n";
+            std::string errMsg = "No such channel: no such channel\r\n";
             send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
             continue;
         }
@@ -460,7 +460,7 @@ void Client::handleKick(std::vector<std::string> data)
     if (!channel->isOperator(this))
     {
 
-        std::string err = ":server 482 " + data[1] + " :Cannot kick the last operator from the channel\r\n";
+        std::string err = "Cannot kick the last operator from the channel: cannot kick the last operator from the channel\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
@@ -521,7 +521,7 @@ void Client::handleInvite(std::vector<std::string> data)
 
     if (!channel->isOperator(this))
     {
-        std::string errorMsg = ":server 482 " + channelName + " :You're not channel operator\r\n";
+        std::string errorMsg =  "You're not channel operator: You're not channel operator\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
@@ -644,9 +644,6 @@ void Client::handleTopic(std::vector<std::string> data)
     send(clientSocketFd, msg.c_str(), msg.length(), 0);
 }
 
-// mode  hata
-// mode #c //cb hata
-// mode #chan -flag
 
 // joini düzenle limite göre
 // MODE #kanal +o userdd
@@ -655,70 +652,74 @@ void Client::handleTopic(std::vector<std::string> data)
 
 //+k modu için joini düzenle şifreli kanalsa joinde şifre yazmalı
 
+// mode #chan -flag
 void Client::handleMode(std::vector<std::string> data)
 {
     std::string msg;
 
-    if (data.size() < 3)
+    char sign = data[2][0];
+    char mode = data[2][1];
+    if (data.size() < 3 || (mode == 'o' && data.size() <= 3))
     {
-        std::string errorMsg = ":server 461 " + nickName + " MODE :Not enough parameters\r\n";
+        std::string errorMsg = "MODE requires more parameters\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     if (!server->isChannel(data[1]))
     {
-        std::string errorMsg = ":server 403 " + data[1] + " :No such channel\r\n";
+        std::string errorMsg = "No such channel: no such channel\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
     Channel *channel = server->getChannel(data[1]);
-    if((data[2][0] != '+' && data[2][0] != '-') || (data[2][1] != 'i' && data[2][1] != 'l' && data[2][1] != 'k'  && data[2][1] != 't' && data[2][1] != 'o'))
+    if((sign != '+' && sign != '-') ||
+        (mode != 'i' && mode != 't' && mode != 'l' && mode != 'k' && mode != 'o'))
     {
-        std::string err = ":server 472 " + nickName + " " + data[2] + " :is unknown mode char to me\r\n";
+        std::string err = data[2] + ": is unknown mode char to me\r\n";
         send(clientSocketFd, err.c_str(), err.size(), 0);
         return;
     }
     if (!channel->isOperator(this))
     {
-        std::string errorMsg = "::server 482 " + nickName + " " + data[1] + " :You're not channel operator\r\n";
+        std::string errorMsg = data[1] + ": You're not channel operator\r\n";
         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
         return;
     }
-    if (data[2].size() == 2 && data[2][1] == 'i')
+    if (mode == 'i')
     {
-        if (data[2][0] == '+')
+        if (sign == '+')
         {
             channel->setInviteOnly(true);
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " +i\r\n";
         }
-        else if (data[2][0] == '-')
+        else if (sign == '-')
         {
             channel->setInviteOnly(false);
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -i\r\n";
         }
         channel->broadcast(msg, NULL);
     }
-    else if (data[2].size() == 2 && data[2][1] == 't')
+    else if (mode == 't')
     {
-        if (data[2][0] == '+')
+        if (sign == '+')
         {
             channel->setAuthTopic(true);
-            msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " +t\r\n";
+             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " " + data[2] + "\r\n";
         }
-        else if (data[2][0] == '-')
+        else if (sign == '-')
         {
             channel->setAuthTopic(false);
-            msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -t\r\n";
+            msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " " + data[2] + "\r\n";
         }
         channel->broadcast(msg, NULL);
     }
-    else if (data[2].size() == 2 && data[2][1] == 'l')
+    else if (mode == 'l')
     {
-        if (data[2][0] == '+')
+        if (sign == '+')
         {
             if (data.size() < 4)
             {
-                std::string errorMsg = ":server 461 " + nickName + " MODE +l :Not enough parameters\r\n";
+                std::string errorMsg = "MODE requires more parameters\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
                 return;
             }
@@ -734,7 +735,7 @@ void Client::handleMode(std::vector<std::string> data)
             channel->setUserLimit(limit);
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " +l " + data[3] + "\r\n";
         }
-        else if (data[2][0] == '-')
+        else if (sign == '-')
         {
             channel->closeUserLimit();
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " -l\r\n";
@@ -742,11 +743,11 @@ void Client::handleMode(std::vector<std::string> data)
 
         channel->broadcast(msg, NULL);
     }
-    else if (data[2].size() == 2 && data[2][1] == 'o')
+    else if (mode == 'o')
     {
         if (data.size() < 4)
         {
-            std::string errorMsg = ":server 461 " + nickName + " MODE :Not enough parameters\r\n";
+            std::string errorMsg = "MODE requires more parameters\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
@@ -754,7 +755,7 @@ void Client::handleMode(std::vector<std::string> data)
         Client *targetClient = server->getClientNick(data[3]);
         if (!targetClient)
         {
-            std::string errorMsg = ":401 " + nickName + " " + data[3] + " :No such nick/channel\r\n";
+            std::string errorMsg = ":401 " + data[3] + " :No such nick/channel\r\n";
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
@@ -764,7 +765,7 @@ void Client::handleMode(std::vector<std::string> data)
             send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
             return;
         }
-        if (data[2][0] == '+')
+        if (sign == '+')
             channel->addOperator(targetClient);
         else
             channel->removeOperator(targetClient);
@@ -772,13 +773,13 @@ void Client::handleMode(std::vector<std::string> data)
         msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " " + data[2] + " " + data[3] + "\r\n";
         channel->broadcast(msg, NULL);
     }
-    else if (data[2].size() == 2 && data[2][1] == 'k')
+    else if (mode == 'k')
     {
-        if (data[2][0] == '+')
+        if (sign == '+')
         {
             if (data.size() < 4)
             {
-                std::string errorMsg = ":server 461 " + nickName + " MODE +k :Not enough parameters\r\n";
+                std::string errorMsg ="MODE requires more parameters\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
                 return;
             }
@@ -793,7 +794,7 @@ void Client::handleMode(std::vector<std::string> data)
             channel->setKey(data[3]);
             msg = ":" + nickName + "!" + userName + "@localhost MODE " + data[1] + " +k " + data[3] + "\r\n";
         }
-        else if (data[2][0] == '-')
+        else if (sign == '-')
         {
             if (!channel->hasKey())
             {

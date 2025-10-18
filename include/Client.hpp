@@ -39,10 +39,6 @@ class Client
 	bool isRegistered[3];
 	bool hasWelcomed;
 
-	// // Buffer to accumulate incoming bytes until a full line (CRLF or LF) is received
-	// std::string inputBuffer;
-
-
 	public:
 		Client(int clientSocketFd,std::string serverPass, Server* srv);
 		~Client();
@@ -72,9 +68,6 @@ class Client
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
 
-		// // Append raw incoming bytes and process complete lines (CRLF or LF terminated)
-		// void handleIncoming(const char* data, ssize_t len);
-		
 		std::string getHostName()const;
 		std::string getNickName()const;
 		std::string getRealName()const;

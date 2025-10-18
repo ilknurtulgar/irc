@@ -171,9 +171,7 @@ void Server::recvClientData(int clientSocketFd)
 			// Remove client from channels (this broadcasts the quit/part as needed)
 			removeClient(clientSocketFd, quitMsg);
 
-			// removeClient will now delete and erase the client from the clients map,
-			// so do not delete/erase here to avoid double-free.
-		}
+
 		if (clientSocketFd >= 0)
 			close(clientSocketFd);
 
@@ -195,6 +193,7 @@ void Server::recvClientData(int clientSocketFd)
 	std::string receiveData(buffer);
 	
 	clients[clientSocketFd]-> handleCommand(receiveData);
+	}
 }
 
 bool Server::isChannel(const std::string &name){

@@ -33,7 +33,7 @@ private:
     std::string channelName;
     std::string topic;
     std::map<int, Client *> users;
-    std::set<Client *> operators; //@kullanıcı
+    std::set<Client *> operators;
     std::set<Client *> invited;
     bool inviteOnly;
     bool authTopic;
