@@ -177,8 +177,8 @@ void Server::recvClientData(int clientSocketFd)
 
 		return;
 
+		}
 	}
-
 	if(byteRead > 510){
 		std::string errorMsg = "ERROR :Line too long. Max 512 bytes allowed per message.\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
@@ -193,8 +193,8 @@ void Server::recvClientData(int clientSocketFd)
 	std::string receiveData(buffer);
 	
 	clients[clientSocketFd]-> handleCommand(receiveData);
-	}
 }
+
 
 bool Server::isChannel(const std::string &name){
 	if(channels.find(name) == channels.end())
