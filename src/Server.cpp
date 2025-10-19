@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 19:11:39 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/19 20:42:16 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,7 +352,8 @@ void Server::removeClient(int clientSocketFd, const std::string& message)
 	}
 
 	std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
-	
+	close(clientSocketFd);
+
 }
 
 std::map<std::string, Channel*>& Server::getChannels() {

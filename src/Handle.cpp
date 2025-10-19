@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Handle.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/19 16:01:38 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 20:52:33 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,7 +359,6 @@ void Client::handleQuit(std::vector<std::string> data)
     send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
 	send(clientSocketFd, closeMsg.c_str(), closeMsg.length(), 0);
     server->removeClient(clientSocketFd, errMsg);
-    close(clientSocketFd);
 }
 void Client::handleWho(std::vector<std::string> data)
 {
