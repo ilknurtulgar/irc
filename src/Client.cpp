@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 16:36:50 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/19 19:12:21 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
 	for (size_t i = 0; i < 3; i++)
 		isRegistered[i] = 0;
 
-	
 }
 
 Client::~Client()

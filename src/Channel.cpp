@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 19:32:03 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/19 19:15:23 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,4 +185,8 @@ const std::string& Channel::getKey() const {
 size_t Channel::getUserCount() const
 {
     return users.size();
+}
+
+std::map<int, Client*> &Channel::getUsers(){
+     return users; 
 }

@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:50:12 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 15:23:43 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/19 19:13:54 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ public:
 
     void addUser(Client *client);
     bool whereNames(Client *client);
-    std::map<int, Client *> &getUsers() { return users; }
+    std::map<int, Client *> &getUsers();
     void removeUser(Client *client);
     bool findUser(Client *client) const;
 
