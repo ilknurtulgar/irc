@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/19 15:46:10 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 16:01:38 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -514,32 +514,32 @@ void Client::handleNotice(std::vector<std::string> data)
 {
     if (data.size() < 3)
         return;
-
     std::string user = data[1];
     std::string message;
     for (size_t i = 2; i < data.size(); ++i)
     {
         message += data[i];
         if (i + 1 < data.size())
-        message += " ";
+            message += " ";
     }
     if (!message.empty() && message[0] == ':')
         message.erase(0, 1);
+    std::string prefix = ":" + nickName + "!~" + getUserName() + "@localhost";
+    std::string errormsg = prefix + " NOTICE " + user + " :" + message + "\r\n";
+    Client *userClient = server->getClientNick(user);
+    if (userClient)
+    {
+        send(userClient->getFd(), errormsg.c_str(), errormsg.length(), 0);
+        return;
+    }
     if (user[0] == '#')
     {
         if (!server->isChannel(user))
             return;
         Channel *channel = server->getChannel(user);
-        std::string errormsg = ":" + nickName + " NOTICE " + user + " :" + message + "\r\n";
-        channel->broadcast(errormsg, this);
-    }
-    else
-    {
-        Client *userClient = server->getClientNick(user);
-        if (!userClient)
+        if (!channel)
             return;
-        std::string errormsg = ":" + nickName + " NOTICE " + user + " :" + message + "\r\n";
-        send(userClient->getFd(), errormsg.c_str(), errormsg.length(), 0);
+        channel->broadcast(errormsg, this);
     }
 }
 
