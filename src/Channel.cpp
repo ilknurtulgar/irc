@@ -6,7 +6,7 @@
 /*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/19 19:15:23 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/19 20:06:08 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,14 @@ bool Channel::whereNames(Client *client)
 
 void Channel::removeUser(Client *client)
 {
-    // Remove from user map
     users.erase(client->getFd());
-    // If the user was an operator, remove them from operators set
     operators.erase(client);
-    // Also remove any outstanding invite for this client
     invited.erase(client);
 
-    // If no operators remain but users exist, promote the first user to operator
     if (operators.empty() && !users.empty())
     {
         Client *newOp = users.begin()->second;
         operators.insert(newOp);
-        // Broadcast MODE +o to inform clients about the new operator
         std::string modeMsg = ":" + newOp->getNickName() + "!" + newOp->getUserName() + "@localhost MODE " + channelName + " +o " + newOp->getNickName() + "\r\n";
         broadcast(modeMsg, NULL);
     }
