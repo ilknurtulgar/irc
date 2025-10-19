@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 13:56:21 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 15:45:16 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,40 +127,6 @@ void Client::handleCommand(std::string &receiveData)
 		hasWelcomed = true;
 	}
 }
-
-// void Client::handleIncoming(const char* data, ssize_t len)
-// {
-// 	if (len <= 0)
-// 		return;
-// 	// Append received bytes to the buffer
-// 	inputBuffer.append(data, data + len);
-
-// 	// Process complete lines (either CRLF or LF terminated)
-// 	size_t pos;
-// 	while ((pos = inputBuffer.find('\n')) != std::string::npos)
-// 	{
-// 		// Extract line up to the LF
-// 		std::string line = inputBuffer.substr(0, pos + 1);
-// 		// Remove the processed line from buffer
-// 		inputBuffer.erase(0, pos + 1);
-
-// 		// Normalize CRLF to remove trailing CR/LF (C++98 compatible)
-// 		if (!line.empty()) {
-// 			size_t sz = line.size();
-// 			if (sz > 0 && line[sz - 1] == '\n')
-// 				line.erase(sz - 1, 1);
-// 			sz = line.size();
-// 			if (sz > 0 && line[sz - 1] == '\r')
-// 				line.erase(sz - 1, 1);
-// 		}
-
-// 		if (line.empty())
-// 			continue;
-
-// 		// Now parse and handle the full command line
-// 		handleCommand(line);
-// 	}
-// }
 
 int Client::getFd()const{
 	return clientSocketFd;

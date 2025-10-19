@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/19 13:08:30 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 15:46:10 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,10 +138,6 @@ void Client::handlePing(std::vector<std::string> data)
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
 
-
-// kanaın limiti dolmuşsa hata, dolmmamıışsa al
-// birden çok kanal adı yazılırsa argüman inceksleri karışacak!!!!!
-// +k için fonksiyonu güncelledim
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -288,11 +284,6 @@ void Client::handleNames(std::vector<std::string> data)
     }
 }
 
-// komutta kanal adı var mı BAK
-// kanal var mı
-// kullanıcı kanalda var mı
-// mapten sil
-// bir kullanıcı varsa kanalı da sil
 void Client::handlePart(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -347,13 +338,6 @@ void Client::handlePart(std::vector<std::string> data)
         }
     }
 }
-
-// QUIT iteratorle kanalı sil çıktı= :nick!user@host QUIT :Client quit
-
-// QUIT :mesaj varsa mesajı da göster ekranda çıktısı= :nick!user@host QUIT :mdsaj
-// kullanıcı tüm kanallardan çıkacak
-// socket kapat!!!!!!!!!!!!
-//  client sil!!!!!!!!!!
 
 void Client::handleQuit(std::vector<std::string> data)
 {
@@ -480,11 +464,6 @@ void Client::handleKick(std::vector<std::string> data)
     channel->removeUser(userClient);
 }
 
-// üç parametre
-// kanal var mı
-// davet eden kanal da mı
-// edilen kullanıcı var mı
-
 void Client::handleInvite(std::vector<std::string> data)
 {
     if (data.size() < 3)
@@ -531,13 +510,8 @@ void Client::handleInvite(std::vector<std::string> data)
     channel->addInvite(inviteClient);
 }
 
-// notice suer :mesaj
-// kullanıcıysa hedef kullanıcı var mı
-/// kanalsa hedef kanal var mı
-// EKSİK PARAMETRE MESSJI VERMEZ RFC 1459 BUNDAN DOLAYII hata mesajı döndürmez
 void Client::handleNotice(std::vector<std::string> data)
 {
-    //BURASI HATALI 
     if (data.size() < 3)
         return;
 
@@ -629,15 +603,6 @@ void Client::handleTopic(std::vector<std::string> data)
     send(clientSocketFd, msg.c_str(), msg.length(), 0);
 }
 
-
-// joini düzenle limite göre
-// MODE #kanal +o userdd
-// msg en başa al her yerde yazma
-// target var mı yok u bak +o için
-
-//+k modu için joini düzenle şifreli kanalsa joinde şifre yazmalı
-
-// mode #chan -flag
 void Client::handleMode(std::vector<std::string> data)
 {
     std::string msg;
@@ -795,9 +760,6 @@ void Client::handleMode(std::vector<std::string> data)
         channel->broadcast(msg, NULL);
     }
 }
-
-// list : tüm kanalları, konuları, user sayısını verir
-// list #kanal o kanaldaki kullanıcı sayısı ve topiz veriri
 
 void Client::handleList(std::vector<std::string> data)
 {

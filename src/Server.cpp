@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 13:54:49 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 15:52:34 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,7 @@ void Server::setupServer()
 		exit(EXIT_FAILURE);
 	}
 	
-	int flag = fcntl(serverSocketFd, F_GETFL, 0);
-	if(flag < 0)
-	{
-		perror("fcntl F_getfl");
-		exit(EXIT_FAILURE);
-	}
-	flag |= O_NONBLOCK;
-	if(fcntl(serverSocketFd, F_SETFL, flag) < 0)
+	if(fcntl(serverSocketFd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		perror("fcntl F_setfl");
 		exit(EXIT_FAILURE);
@@ -126,15 +119,8 @@ void Server::acceptNewClient()
         perror("accept failed");
         return;
     }
-		
-	int flag = fcntl(newClientSocketFd, F_GETFL, 0);
-	if(flag < 0)
-	{
-		perror("fcntl F_getfl");
-		exit(EXIT_FAILURE);
-	}	
-	flag |= O_NONBLOCK;
-	if(fcntl(newClientSocketFd, F_SETFL, flag) < 0)
+	
+	if(fcntl(newClientSocketFd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		perror("fcntl F_setfl");
 		exit(EXIT_FAILURE);
