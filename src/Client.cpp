@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 15:45:16 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 16:36:50 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ Server* Client::getServer()const{
 
 void Client::handleCommand(std::string &receiveData)
 {
-
 	std::stringstream ss(receiveData);
 	std::string newCommand;
 	std::vector<std::string> data;

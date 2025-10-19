@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 15:52:34 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 16:49:53 by zayaz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,14 +182,17 @@ void Server::recvClientData(int clientSocketFd)
 	
 	Client *client = clients[clientSocketFd];
 	client->getRecvBuffer() += receiveData;
-
 	size_t pos;
-	while ((pos = client->getRecvBuffer().find("\r\n")) != std::string::npos){
-		std::string cmd = client->getRecvBuffer().substr(0,pos);
-		client->getRecvBuffer().erase(0,pos + 2);
-		
-		client->handleCommand(cmd);
-	}
+while ((pos = client->getRecvBuffer().find_first_of("\r\n")) != std::string::npos) {
+    std::string cmd = client->getRecvBuffer().substr(0, pos);
+    while (pos < client->getRecvBuffer().size() &&
+           (client->getRecvBuffer()[pos] == '\r' || client->getRecvBuffer()[pos] == '\n')) {
+        pos++;
+    }
+    client->getRecvBuffer().erase(0, pos);
+    if (!cmd.empty())
+        client->handleCommand(cmd);
+}
 	
 }
 
