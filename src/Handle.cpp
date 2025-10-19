@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/16 16:57:28 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 13:08:30 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,22 +137,7 @@ void Client::handlePing(std::vector<std::string> data)
 
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
-// void Client::handlePing(std::vector<std::string> data)
-// {
 
-//     if (data.size() < 2)
-//     {
-//         std::string errorMsg = ":server 409 " + nickName + " :No origin specified\r\n";
-//         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-        
-//         std::cout << "PING: Sent 409 ERR_NOORIGIN to " << nickName << std::endl;
-//         return;
-//     }
-//     std::string token = data[1];
-//     std::string response = "PONG :" + token + "\r\n"; 
-//     send(clientSocketFd, response.c_str(), response.length(), 0);
-//     std::cout << "Sent PONG to " << nickName << ": " << response;
-// }
 
 // kanaın limiti dolmuşsa hata, dolmmamıışsa al
 // birden çok kanal adı yazılırsa argüman inceksleri karışacak!!!!!
@@ -188,7 +173,7 @@ void Client::handleJoin(std::vector<std::string> data)
         {
             if (channel->getUserCount() >= channel->getUserLimit()) 
             {
-                std::string errorMsg = "Cannot join channel (+l) :Cannot join channel (+l)\r\n";
+                std::string errorMsg = "Cannot join channel (+l): cannot join channel (+l)\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }
@@ -202,7 +187,7 @@ void Client::handleJoin(std::vector<std::string> data)
         {
             if (key.empty() || channel->getKey() != key)
             {
-                std::string errorMsg = ":server 475 " + channelName + " :Cannot join channel (+k)\r\n";
+                std::string errorMsg = "Cannot join channel (+k): cannot join channel (+k)\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }

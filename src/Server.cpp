@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/16 16:01:07 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 13:54:49 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@ Server::Server(int port, std::string password) : port(port), password(password){
 Server::~Server()
 {
 	std::map<int, Client*>::iterator it;
-	for(it = clients.begin(); it != clients.end(); ++it)
+	for(it = clients.begin(); it != clients.end(); ++it){
+		close(it->first);
 		delete it->second;
+	}
 	clients.clear();
 	if (serverSocketFd >= 0)
 		close(serverSocketFd);
@@ -192,7 +194,17 @@ void Server::recvClientData(int clientSocketFd)
 	buffer[byteRead] = '\0';
 	std::string receiveData(buffer);
 	
-	clients[clientSocketFd]-> handleCommand(receiveData);
+	Client *client = clients[clientSocketFd];
+	client->getRecvBuffer() += receiveData;
+
+	size_t pos;
+	while ((pos = client->getRecvBuffer().find("\r\n")) != std::string::npos){
+		std::string cmd = client->getRecvBuffer().substr(0,pos);
+		client->getRecvBuffer().erase(0,pos + 2);
+		
+		client->handleCommand(cmd);
+	}
+	
 }
 
 

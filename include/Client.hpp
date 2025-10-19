@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/16 15:42:45 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 13:56:26 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class Client
 	std::string hostName;
 	std::string serverName;
 	std::string realName;
+	std::string recvBuffer;
 	std::string serverPass;
 	Server *server;
 	bool signPass;
@@ -72,6 +73,7 @@ class Client
 		std::string getNickName()const;
 		std::string getRealName()const;
 		std::string getUserName()const;
+		std::string& getRecvBuffer();
 };
 
 

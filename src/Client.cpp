@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/16 15:10:14 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/19 13:56:21 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
 	userName = "";
 	hostName = "";
 	serverName = "";
+	recvBuffer = "";
 	realName = "";
 	signPass = false;
 	hasWelcomed = false;
@@ -179,4 +180,8 @@ std::string Client::getRealName()const{
 
 std::string Client::getUserName()const{
 	return userName;
+}
+
+std::string& Client::getRecvBuffer(){
+	return recvBuffer;
 }
