@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/11 19:30:32 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/16 15:10:14 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,6 @@ void Client::handleCommand(std::string &receiveData)
 	if (data.empty())
 		return;
 
-	std::cout << "Received from " << clientSocketFd << ": [";
-	for (size_t i = 0; i < data.size(); ++i)
-	{
-		std::cout << data[i];
-		if (i < data.size() - 1)
-			std::cout << " ";
-	}
-	std::cout << "]" << std::endl;
 
 	if (!invalidCommand(data[0]))
 	{
@@ -69,25 +61,28 @@ void Client::handleCommand(std::string &receiveData)
 		return;
 	}
 
-	if (!isSignedPassword() && data[0] != "PASS")
+	if (!isSignedPassword() && data[0] != "PASS" && data[0] != "QUIT" && data[0] != "PING")
 	{
 		std::string errorMsg = ":server 464 * :Password required\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 		return;
 	}
 
-	if (data[0] == "PASS")
+	if (data[0] == "QUIT") 
+		handleQuit(data);
+	else if (data[0] == "PASS")
 		handlePass(data);
 	else if (data[0] == "USER")
 		handleUser(data);
 	else if (data[0] == "NICK")
-		handleNick(data);
-	
+		handleNick(data);	
+	else if (data[0] == "PING") 
+			handlePing(data);
 	else
 	{
 		if(!isRegister())
 		{
-			std::string errorMsg = ":server 451 * :You have not registered"; 
+			std::string errorMsg = ":server 451 * :You have not registered\r\n"; 
 			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
 			return;
@@ -100,12 +95,8 @@ void Client::handleCommand(std::string &receiveData)
 			handleNames(data);
 		else if (data[0] == "WHO") 
 			handleWho(data);
-		else if (data[0] == "PING") 
-			handlePing(data);
 		if (data[0] == "PART") 
 			handlePart(data);
-		if (data[0] == "QUIT") 
-	 		handleQuit(data);
 		else if (data[0] == "KICK") 
 			handleKick(data);
 		else if (data[0] == "TOPIC") 
@@ -135,6 +126,40 @@ void Client::handleCommand(std::string &receiveData)
 		hasWelcomed = true;
 	}
 }
+
+// void Client::handleIncoming(const char* data, ssize_t len)
+// {
+// 	if (len <= 0)
+// 		return;
+// 	// Append received bytes to the buffer
+// 	inputBuffer.append(data, data + len);
+
+// 	// Process complete lines (either CRLF or LF terminated)
+// 	size_t pos;
+// 	while ((pos = inputBuffer.find('\n')) != std::string::npos)
+// 	{
+// 		// Extract line up to the LF
+// 		std::string line = inputBuffer.substr(0, pos + 1);
+// 		// Remove the processed line from buffer
+// 		inputBuffer.erase(0, pos + 1);
+
+// 		// Normalize CRLF to remove trailing CR/LF (C++98 compatible)
+// 		if (!line.empty()) {
+// 			size_t sz = line.size();
+// 			if (sz > 0 && line[sz - 1] == '\n')
+// 				line.erase(sz - 1, 1);
+// 			sz = line.size();
+// 			if (sz > 0 && line[sz - 1] == '\r')
+// 				line.erase(sz - 1, 1);
+// 		}
+
+// 		if (line.empty())
+// 			continue;
+
+// 		// Now parse and handle the full command line
+// 		handleCommand(line);
+// 	}
+// }
 
 int Client::getFd()const{
 	return clientSocketFd;
