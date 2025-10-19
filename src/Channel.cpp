@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
+/*   Updated: 2025/10/12 19:32:03 by zayaz            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/Channel.hpp"
 
 Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false), authTopic(false), userLimit(0), openLimit(false) {}
@@ -16,7 +28,7 @@ void Channel::broadcast(const std::string &msg, Client *client)
     for (std::map<int, Client *>::iterator it = users.begin(); it != users.end(); ++it)
     {
         if (it->second != client)
-            send(it->second->getFd(), msg.c_str(), msg.length(), 0);
+            send(it->second->getFd(), msg.c_str(), msg.length(), MSG_NOSIGNAL);
     }
 }
 
@@ -28,7 +40,22 @@ bool Channel::whereNames(Client *client)
 
 void Channel::removeUser(Client *client)
 {
+    // Remove from user map
     users.erase(client->getFd());
+    // If the user was an operator, remove them from operators set
+    operators.erase(client);
+    // Also remove any outstanding invite for this client
+    invited.erase(client);
+
+    // If no operators remain but users exist, promote the first user to operator
+    if (operators.empty() && !users.empty())
+    {
+        Client *newOp = users.begin()->second;
+        operators.insert(newOp);
+        // Broadcast MODE +o to inform clients about the new operator
+        std::string modeMsg = ":" + newOp->getNickName() + "!" + newOp->getUserName() + "@localhost MODE " + channelName + " +o " + newOp->getNickName() + "\r\n";
+        broadcast(modeMsg, NULL);
+    }
 }
 
 bool Channel::findUser(Client *client) const
@@ -130,11 +157,6 @@ size_t Channel::getUserLimit() const
     return userLimit;
 }
 
-size_t Channel::getUserCount() const
-{
-    return users.size();
-}
-
 void Channel::addOperator(Client *client) 
 { 
     operators.insert(client);
@@ -158,4 +180,9 @@ bool Channel::hasKey() const {
 
 const std::string& Channel::getKey() const {
     return key;
+}
+
+size_t Channel::getUserCount() const
+{
+    return users.size();
 }

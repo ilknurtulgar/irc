@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/09/13 20:16:22 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/16 15:42:45 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ class Client
 	bool isRegistered[3];
 	bool hasWelcomed;
 
-
 	public:
 		Client(int clientSocketFd,std::string serverPass, Server* srv);
 		~Client();
@@ -68,7 +67,7 @@ class Client
 		int getFd()const;
 		bool isSignedPassword();
 		bool invalidCommand(const std::string& command);
-		
+
 		std::string getHostName()const;
 		std::string getNickName()const;
 		std::string getRealName()const;

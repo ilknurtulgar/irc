@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/12 13:50:12 by zayaz             #+#    #+#             */
+/*   Updated: 2025/10/12 15:23:43 by zayaz            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
@@ -21,7 +33,7 @@ private:
     std::string channelName;
     std::string topic;
     std::map<int, Client *> users;
-    std::set<Client *> operators; //@kullanıcı
+    std::set<Client *> operators;
     std::set<Client *> invited;
     bool inviteOnly;
     bool authTopic;

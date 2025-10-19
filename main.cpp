@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/09 17:13:58 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/16 14:53:00 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int main(int argc, char** argv){
 				std::cout << "ERROR: Invalid password honey" << std::endl;
 				return 0;
 		}
-			
 		}
 		
 		if(password.empty() || password[0] == ':' || password.find(' ') !=std::string::npos)
