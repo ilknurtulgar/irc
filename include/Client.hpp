@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:29 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 13:56:26 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/24 19:51:07 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class Client
 
 		Server* getServer() const;
 		
-		void handleCommand(std::string &receiveData);
+		bool handleCommand(std::string &receiveData);
 		void handleNick(std::vector<std::string> data);
 		void handlePing(std::vector<std::string> data);
 		void handleJoin(std::vector<std::string> data);

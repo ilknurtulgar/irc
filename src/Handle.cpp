@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Handle.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/19 20:52:33 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/24 19:06:16 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -595,6 +595,7 @@ void Client::handleTopic(std::vector<std::string> data)
             msg += data[i];
         }
         channel->setTopic(msg);
+
         msg = ":" + nickName + "!" + userName + "@" + hostName +
               " TOPIC " + data[1] + " :" + channel->getTopic() + "\r\n";
     }

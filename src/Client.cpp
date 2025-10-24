@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 20:29:01 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/24 19:50:54 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ Server* Client::getServer()const{
 	return server;
 }
 
-void Client::handleCommand(std::string &receiveData)
+bool Client::handleCommand(std::string &receiveData)
 {
 	std::stringstream ss(receiveData);
 	std::string newCommand;
@@ -50,25 +50,25 @@ void Client::handleCommand(std::string &receiveData)
 	}
 
 	if (data.empty())
-		return;
+		return true;
 
 
 	if (!invalidCommand(data[0]))
 	{
 		std::string errorMsg = ":server 421 " + nickName + " " + data[0] + " :Unknown command\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
+		return true;
 	}
 
 	if (!isSignedPassword() && data[0] != "PASS" && data[0] != "QUIT" && data[0] != "PING")
 	{
 		std::string errorMsg = ":server 464 * :Password required\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
+		return true;
 	}
 
 	if (data[0] == "QUIT") 
-		handleQuit(data);
+		return handleQuit(data),true;
 	else if (data[0] == "PASS")
 		handlePass(data);
 	else if (data[0] == "USER")
@@ -84,7 +84,7 @@ void Client::handleCommand(std::string &receiveData)
 			std::string errorMsg = ":server 451 * :You have not registered\r\n"; 
 			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-			return;
+			return true;
 		}	
 		if (data[0] == "JOIN") 	
 			handleJoin(data);
@@ -124,6 +124,7 @@ void Client::handleCommand(std::string &receiveData)
 
 		hasWelcomed = true;
 	}
+	return false;
 }
 
 int Client::getFd()const{

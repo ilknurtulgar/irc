@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/19 20:06:08 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/24 19:09:52 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false), authTopic(false), userLimit(0), openLimit(false) {}
 
-Channel::~Channel() {}
+Channel::~Channel() {
+}
 
 void Channel::addUser(Client *client)
 {

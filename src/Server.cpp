@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/19 20:42:16 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/24 20:09:32 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,7 @@ void Server::recvClientData(int clientSocketFd)
 	Client *client = clients[clientSocketFd];
 	client->getRecvBuffer() += receiveData;
 	size_t pos;
+	bool clientDeleted = false;
 while ((pos = client->getRecvBuffer().find_first_of("\r\n")) != std::string::npos) {
     std::string cmd = client->getRecvBuffer().substr(0, pos);
     while (pos < client->getRecvBuffer().size() &&
@@ -187,8 +188,11 @@ while ((pos = client->getRecvBuffer().find_first_of("\r\n")) != std::string::npo
         pos++;
     }
     client->getRecvBuffer().erase(0, pos);
-    if (!cmd.empty())
-        client->handleCommand(cmd);
+    if (!cmd.empty()){
+        clientDeleted = client->handleCommand(cmd);
+		if(clientDeleted)
+			return;
+	}
 }
 	
 }
@@ -353,6 +357,19 @@ void Server::removeClient(int clientSocketFd, const std::string& message)
 
 	std::cout << "INFO: Client fd=" << clientSocketFd << " (" << client->getNickName() << ") removed from server map." << std::endl;
 	close(clientSocketFd);
+
+	   std::map<int, Client*>::iterator clientIt;
+    for (clientIt = clients.begin(); clientIt != clients.end(); ++clientIt)
+    {
+        if (clientIt->first != clientSocketFd)
+            send(clientIt->first, message.c_str(), message.length(), 0);
+    }
+
+
+    close(clientSocketFd);
+    clients.erase(it);
+    delete client;
+	client = NULL;
 
 }
 
