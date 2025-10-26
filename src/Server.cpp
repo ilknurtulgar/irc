@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 16:19:21 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/26 12:22:06 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/26 13:21:24 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,8 @@ void Server::recvClientData(int clientSocketFd)
 	client->getRecvBuffer() += receiveData;
 	size_t pos;
 	bool clientDeleted = false;
-	while ((pos = client->getRecvBuffer().find_first_of("\r\n")) != std::string::npos) {
+	while ((pos = client->getRecvBuffer().find_first_of("\r\n")) != std::string::npos) 
+	{
     std::string cmd = client->getRecvBuffer().substr(0, pos);
     while (pos < client->getRecvBuffer().size() &&
            (client->getRecvBuffer()[pos] == '\r' || client->getRecvBuffer()[pos] == '\n')) {
@@ -193,7 +194,7 @@ void Server::recvClientData(int clientSocketFd)
 		if(clientDeleted)
 			return;
 	}
-}
+	}
 	
 }
 

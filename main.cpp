@@ -6,14 +6,14 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 17:48:05 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/16 14:53:00 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/26 13:26:25 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./include/Server.hpp"
 #include "./include/Client.hpp"
 
-volatile sig_atomic_t g_run = 1;
+sig_atomic_t g_run = 1;
 
 void signal_handler(int signum){
 	std::cout << "Interrupt signal (" << signum << ") received.\n";
