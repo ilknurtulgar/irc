@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/24 19:50:54 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/26 12:17:32 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,10 @@ bool Client::handleCommand(std::string &receiveData)
 		std::string msg001 = ":server 001 " + nickName + " :Welcome to the IRC server, " + nickName + "\r\n";
 		std::string msg002 = ":server 002 " + nickName + " :Your host is irc.localhost, running version 0.1\r\n";
 		std::string msg003 = ":server 003 " + nickName + " :This server was created just now\r\n";
-		std::string msg004 = ":server 004 " + nickName + " irc.localhost 0.1 iowghraAsORTVSxNCWqBzvdHtGp\r\n";
 
 		send(clientSocketFd, msg001.c_str(), msg001.length(), 0);
 		send(clientSocketFd, msg002.c_str(), msg002.length(), 0);
 		send(clientSocketFd, msg003.c_str(), msg003.length(), 0);
-		send(clientSocketFd, msg004.c_str(), msg004.length(), 0);
 
 		hasWelcomed = true;
 	}
