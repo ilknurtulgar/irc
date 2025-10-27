@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:12:54 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/16 15:10:14 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/26 12:17:32 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ Client::Client(int clientSocketFd, std::string serverPass, Server* srv)
 	userName = "";
 	hostName = "";
 	serverName = "";
+	recvBuffer = "";
 	realName = "";
 	signPass = false;
 	hasWelcomed = false;
 	for (size_t i = 0; i < 3; i++)
 		isRegistered[i] = 0;
 
-	
 }
 
 Client::~Client()
@@ -38,9 +38,8 @@ Server* Client::getServer()const{
 	return server;
 }
 
-void Client::handleCommand(std::string &receiveData)
+bool Client::handleCommand(std::string &receiveData)
 {
-
 	std::stringstream ss(receiveData);
 	std::string newCommand;
 	std::vector<std::string> data;
@@ -51,25 +50,25 @@ void Client::handleCommand(std::string &receiveData)
 	}
 
 	if (data.empty())
-		return;
+		return true;
 
 
 	if (!invalidCommand(data[0]))
 	{
 		std::string errorMsg = ":server 421 " + nickName + " " + data[0] + " :Unknown command\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
+		return true;
 	}
 
 	if (!isSignedPassword() && data[0] != "PASS" && data[0] != "QUIT" && data[0] != "PING")
 	{
 		std::string errorMsg = ":server 464 * :Password required\r\n";
 		send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
+		return true;
 	}
 
 	if (data[0] == "QUIT") 
-		handleQuit(data);
+		return handleQuit(data),true;
 	else if (data[0] == "PASS")
 		handlePass(data);
 	else if (data[0] == "USER")
@@ -85,7 +84,7 @@ void Client::handleCommand(std::string &receiveData)
 			std::string errorMsg = ":server 451 * :You have not registered\r\n"; 
 			std::cout << " data[0] rejected: Not fully registered." << std::endl;
 			send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-			return;
+			return true;
 		}	
 		if (data[0] == "JOIN") 	
 			handleJoin(data);
@@ -116,50 +115,15 @@ void Client::handleCommand(std::string &receiveData)
 		std::string msg001 = ":server 001 " + nickName + " :Welcome to the IRC server, " + nickName + "\r\n";
 		std::string msg002 = ":server 002 " + nickName + " :Your host is irc.localhost, running version 0.1\r\n";
 		std::string msg003 = ":server 003 " + nickName + " :This server was created just now\r\n";
-		std::string msg004 = ":server 004 " + nickName + " irc.localhost 0.1 iowghraAsORTVSxNCWqBzvdHtGp\r\n";
 
 		send(clientSocketFd, msg001.c_str(), msg001.length(), 0);
 		send(clientSocketFd, msg002.c_str(), msg002.length(), 0);
 		send(clientSocketFd, msg003.c_str(), msg003.length(), 0);
-		send(clientSocketFd, msg004.c_str(), msg004.length(), 0);
 
 		hasWelcomed = true;
 	}
+	return false;
 }
-
-// void Client::handleIncoming(const char* data, ssize_t len)
-// {
-// 	if (len <= 0)
-// 		return;
-// 	// Append received bytes to the buffer
-// 	inputBuffer.append(data, data + len);
-
-// 	// Process complete lines (either CRLF or LF terminated)
-// 	size_t pos;
-// 	while ((pos = inputBuffer.find('\n')) != std::string::npos)
-// 	{
-// 		// Extract line up to the LF
-// 		std::string line = inputBuffer.substr(0, pos + 1);
-// 		// Remove the processed line from buffer
-// 		inputBuffer.erase(0, pos + 1);
-
-// 		// Normalize CRLF to remove trailing CR/LF (C++98 compatible)
-// 		if (!line.empty()) {
-// 			size_t sz = line.size();
-// 			if (sz > 0 && line[sz - 1] == '\n')
-// 				line.erase(sz - 1, 1);
-// 			sz = line.size();
-// 			if (sz > 0 && line[sz - 1] == '\r')
-// 				line.erase(sz - 1, 1);
-// 		}
-
-// 		if (line.empty())
-// 			continue;
-
-// 		// Now parse and handle the full command line
-// 		handleCommand(line);
-// 	}
-// }
 
 int Client::getFd()const{
 	return clientSocketFd;
@@ -179,4 +143,8 @@ std::string Client::getRealName()const{
 
 std::string Client::getUserName()const{
 	return userName;
+}
+
+std::string& Client::getRecvBuffer(){
+	return recvBuffer;
 }

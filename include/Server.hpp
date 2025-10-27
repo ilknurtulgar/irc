@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:18:31 by itulgar           #+#    #+#             */
-/*   Updated: 2025/10/12 11:42:42 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/26 13:26:06 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE 1024
 
-extern volatile sig_atomic_t g_run;
+extern sig_atomic_t g_run;
 
 
 class Client;
@@ -64,9 +64,6 @@ class Server
 		void removeChannel(const std::string& channelName);
 		void removeClient(int clientSocketFd, const std::string& message);
 		 std::map<std::string, Channel*>& getChannels();
-
-		
-		
 };
 
 

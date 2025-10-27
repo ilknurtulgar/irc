@@ -6,7 +6,7 @@
 /*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 15:59:03 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/16 16:57:28 by itulgar          ###   ########.fr       */
+/*   Updated: 2025/10/24 20:35:34 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,26 +137,7 @@ void Client::handlePing(std::vector<std::string> data)
 
     std::cout << "Sent PONG to " << nickName << ": " << response;
 }
-// void Client::handlePing(std::vector<std::string> data)
-// {
 
-//     if (data.size() < 2)
-//     {
-//         std::string errorMsg = ":server 409 " + nickName + " :No origin specified\r\n";
-//         send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), 0);
-        
-//         std::cout << "PING: Sent 409 ERR_NOORIGIN to " << nickName << std::endl;
-//         return;
-//     }
-//     std::string token = data[1];
-//     std::string response = "PONG :" + token + "\r\n"; 
-//     send(clientSocketFd, response.c_str(), response.length(), 0);
-//     std::cout << "Sent PONG to " << nickName << ": " << response;
-// }
-
-// kanaın limiti dolmuşsa hata, dolmmamıışsa al
-// birden çok kanal adı yazılırsa argüman inceksleri karışacak!!!!!
-// +k için fonksiyonu güncelledim
 void Client::handleJoin(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -188,7 +169,7 @@ void Client::handleJoin(std::vector<std::string> data)
         {
             if (channel->getUserCount() >= channel->getUserLimit()) 
             {
-                std::string errorMsg = "Cannot join channel (+l) :Cannot join channel (+l)\r\n";
+                std::string errorMsg = "Cannot join channel (+l): cannot join channel (+l)\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }
@@ -202,7 +183,7 @@ void Client::handleJoin(std::vector<std::string> data)
         {
             if (key.empty() || channel->getKey() != key)
             {
-                std::string errorMsg = ":server 475 " + channelName + " :Cannot join channel (+k)\r\n";
+                std::string errorMsg = "Cannot join channel (+k): cannot join channel (+k)\r\n";
                 send(clientSocketFd, errorMsg.c_str(), errorMsg.length(), MSG_NOSIGNAL);
                 continue;
             }
@@ -303,11 +284,6 @@ void Client::handleNames(std::vector<std::string> data)
     }
 }
 
-// komutta kanal adı var mı BAK
-// kanal var mı
-// kullanıcı kanalda var mı
-// mapten sil
-// bir kullanıcı varsa kanalı da sil
 void Client::handlePart(std::vector<std::string> data)
 {
     if (data.size() < 2)
@@ -363,13 +339,6 @@ void Client::handlePart(std::vector<std::string> data)
     }
 }
 
-// QUIT iteratorle kanalı sil çıktı= :nick!user@host QUIT :Client quit
-
-// QUIT :mesaj varsa mesajı da göster ekranda çıktısı= :nick!user@host QUIT :mdsaj
-// kullanıcı tüm kanallardan çıkacak
-// socket kapat!!!!!!!!!!!!
-//  client sil!!!!!!!!!!
-
 void Client::handleQuit(std::vector<std::string> data)
 {
     std::string message = "Client Quit";
@@ -387,10 +356,8 @@ void Client::handleQuit(std::vector<std::string> data)
         errMsg += ": " + message;
     errMsg += "\r\n";
 	std::string closeMsg = "Server ERROR::Closing Link: " + nickName + " (irc.localhost) [Client Quit]\r\n";
-    send(clientSocketFd, errMsg.c_str(), errMsg.length(), 0);
 	send(clientSocketFd, closeMsg.c_str(), closeMsg.length(), 0);
     server->removeClient(clientSocketFd, errMsg);
-    close(clientSocketFd);
 }
 void Client::handleWho(std::vector<std::string> data)
 {
@@ -495,11 +462,6 @@ void Client::handleKick(std::vector<std::string> data)
     channel->removeUser(userClient);
 }
 
-// üç parametre
-// kanal var mı
-// davet eden kanal da mı
-// edilen kullanıcı var mı
-
 void Client::handleInvite(std::vector<std::string> data)
 {
     if (data.size() < 3)
@@ -546,41 +508,36 @@ void Client::handleInvite(std::vector<std::string> data)
     channel->addInvite(inviteClient);
 }
 
-// notice suer :mesaj
-// kullanıcıysa hedef kullanıcı var mı
-/// kanalsa hedef kanal var mı
-// EKSİK PARAMETRE MESSJI VERMEZ RFC 1459 BUNDAN DOLAYII hata mesajı döndürmez
 void Client::handleNotice(std::vector<std::string> data)
 {
-    //BURASI HATALI 
     if (data.size() < 3)
         return;
-
     std::string user = data[1];
     std::string message;
     for (size_t i = 2; i < data.size(); ++i)
     {
         message += data[i];
         if (i + 1 < data.size())
-        message += " ";
+            message += " ";
     }
     if (!message.empty() && message[0] == ':')
         message.erase(0, 1);
+    std::string prefix = ":" + nickName + "!~" + getUserName() + "@localhost";
+    std::string errormsg = prefix + " NOTICE " + user + " :" + message + "\r\n";
+    Client *userClient = server->getClientNick(user);
+    if (userClient)
+    {
+        send(userClient->getFd(), errormsg.c_str(), errormsg.length(), 0);
+        return;
+    }
     if (user[0] == '#')
     {
         if (!server->isChannel(user))
             return;
         Channel *channel = server->getChannel(user);
-        std::string errormsg = ":" + nickName + " NOTICE " + user + " :" + message + "\r\n";
-        channel->broadcast(errormsg, this);
-    }
-    else
-    {
-        Client *userClient = server->getClientNick(user);
-        if (!userClient)
+        if (!channel)
             return;
-        std::string errormsg = ":" + nickName + " NOTICE " + user + " :" + message + "\r\n";
-        send(userClient->getFd(), errormsg.c_str(), errormsg.length(), 0);
+        channel->broadcast(errormsg, this);
     }
 }
 
@@ -637,6 +594,7 @@ void Client::handleTopic(std::vector<std::string> data)
             msg += data[i];
         }
         channel->setTopic(msg);
+
         msg = ":" + nickName + "!" + userName + "@" + hostName +
               " TOPIC " + data[1] + " :" + channel->getTopic() + "\r\n";
     }
@@ -644,15 +602,6 @@ void Client::handleTopic(std::vector<std::string> data)
     send(clientSocketFd, msg.c_str(), msg.length(), 0);
 }
 
-
-// joini düzenle limite göre
-// MODE #kanal +o userdd
-// msg en başa al her yerde yazma
-// target var mı yok u bak +o için
-
-//+k modu için joini düzenle şifreli kanalsa joinde şifre yazmalı
-
-// mode #chan -flag
 void Client::handleMode(std::vector<std::string> data)
 {
     std::string msg;
@@ -810,9 +759,6 @@ void Client::handleMode(std::vector<std::string> data)
         channel->broadcast(msg, NULL);
     }
 }
-
-// list : tüm kanalları, konuları, user sayısını verir
-// list #kanal o kanaldaki kullanıcı sayısı ve topiz veriri
 
 void Client::handleList(std::vector<std::string> data)
 {

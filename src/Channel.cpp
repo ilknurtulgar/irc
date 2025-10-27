@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zayaz <zayaz@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itulgar <itulgar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/12 13:49:45 by zayaz             #+#    #+#             */
-/*   Updated: 2025/10/12 19:32:03 by zayaz            ###   ########.fr       */
+/*   Updated: 2025/10/24 19:09:52 by itulgar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 Channel::Channel(const std::string &channelName) : channelName(channelName), topic(""), inviteOnly(false), authTopic(false), userLimit(0), openLimit(false) {}
 
-Channel::~Channel() {}
+Channel::~Channel() {
+}
 
 void Channel::addUser(Client *client)
 {
@@ -40,19 +41,14 @@ bool Channel::whereNames(Client *client)
 
 void Channel::removeUser(Client *client)
 {
-    // Remove from user map
     users.erase(client->getFd());
-    // If the user was an operator, remove them from operators set
     operators.erase(client);
-    // Also remove any outstanding invite for this client
     invited.erase(client);
 
-    // If no operators remain but users exist, promote the first user to operator
     if (operators.empty() && !users.empty())
     {
         Client *newOp = users.begin()->second;
         operators.insert(newOp);
-        // Broadcast MODE +o to inform clients about the new operator
         std::string modeMsg = ":" + newOp->getNickName() + "!" + newOp->getUserName() + "@localhost MODE " + channelName + " +o " + newOp->getNickName() + "\r\n";
         broadcast(modeMsg, NULL);
     }
@@ -185,4 +181,8 @@ const std::string& Channel::getKey() const {
 size_t Channel::getUserCount() const
 {
     return users.size();
+}
+
+std::map<int, Client*> &Channel::getUsers(){
+     return users; 
 }
